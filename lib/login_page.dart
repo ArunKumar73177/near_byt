@@ -14,27 +14,8 @@ class NearBytApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.indigo,
-        useMaterial3: true,
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Color(0xFF4F46E5), width: 2),
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 12,
-          ),
-          filled: true,
-          fillColor: Colors.white,
-        ),
+        useMaterial3: false,
+        scaffoldBackgroundColor: const Color(0xFFE8E9F3),
       ),
       home: const LoginScreen(),
     );
@@ -91,7 +72,6 @@ class _LoginScreenState extends State<LoginScreen>
     if (!_loginFormKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
-    // Login logic will go here
     await Future.delayed(const Duration(seconds: 1));
     setState(() => _isLoading = false);
     print('Login attempted with: ${_loginUsernameController.text}');
@@ -111,7 +91,6 @@ class _LoginScreenState extends State<LoginScreen>
     }
 
     setState(() => _isLoading = true);
-    // Signup logic will go here
     await Future.delayed(const Duration(seconds: 1));
     setState(() => _isLoading = false);
     print('Signup attempted with: ${_signupUsernameController.text}');
@@ -127,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen>
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF4F46E5),
+              primary: Color(0xFF5B4EE5),
             ),
           ),
           child: child!,
@@ -146,194 +125,240 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFEFF6FF), // blue-50
-              Color(0xFFE0E7FF), // indigo-100
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(12),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 384),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Logo and Brand
-                    Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF4F46E5), // indigo-600
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(
-                        Icons.location_on,
-                        color: Colors.white,
-                        size: 28,
-                      ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 40),
+
+                  // Logo
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF5B4EE5),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'NearByt',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF312E81), // indigo-900
-                        letterSpacing: -0.5,
-                      ),
+                    child: const Icon(
+                      Icons.location_on,
+                      color: Colors.white,
+                      size: 36,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Buy & Sell Items Near You',
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 14,
-                      ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // App Name
+                  const Text(
+                    'NearByt',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF3D3D3D),
                     ),
-                    const SizedBox(height: 24),
+                  ),
+                  const SizedBox(height: 4),
 
-                    // Auth Card
-                    Card(
-                      elevation: 24,
-                      shadowColor: Colors.black.withOpacity(0.1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Welcome',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Login or create an account to start buying and selling',
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
+                  // Tagline
+                  const Text(
+                    'Buy & Sell Items Near You',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF6B6B6B),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
 
-                            // Tabs
-                            Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF3F4F6), // gray-100
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              padding: const EdgeInsets.all(4),
-                              child: TabBar(
-                                controller: _tabController,
-                                indicator: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(6),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 2,
-                                      offset: const Offset(0, 1),
-                                    ),
-                                  ],
-                                ),
-                                labelColor: Colors.black,
-                                labelStyle: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                ),
-                                unselectedLabelColor:
-                                const Color(0xFF6B7280), // gray-500
-                                unselectedLabelStyle: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                ),
-                                dividerColor: Colors.transparent,
-                                indicatorSize: TabBarIndicatorSize.tab,
-                                tabs: const [
-                                  Tab(text: 'Login'),
-                                  Tab(text: 'Sign Up'),
-                                ],
-                              ),
+                  // Auth Card
+                  Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(maxWidth: 400),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 20,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Welcome',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF2D2D2D),
                             ),
-                            const SizedBox(height: 20),
-
-                            // Tab Views
-                            SizedBox(
-                              height: 320,
-                              child: TabBarView(
-                                controller: _tabController,
-                                children: [
-                                  _buildLoginForm(),
-                                  _buildSignupForm(),
-                                ],
-                              ),
+                          ),
+                          const SizedBox(height: 6),
+                          const Text(
+                            'Login or create an account to start buying\nand selling',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFF707070),
+                              height: 1.4,
                             ),
+                          ),
+                          const SizedBox(height: 20),
 
-                            // Features
-                            Divider(color: Colors.grey.shade200),
-                            const SizedBox(height: 16),
-                            Row(
+                          // Tabs
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF5F5F5),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.all(4),
+                            child: Row(
                               children: [
                                 Expanded(
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.shopping_bag_outlined,
-                                        color: const Color(0xFF4F46E5),
-                                        size: 28,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      _tabController.animateTo(0);
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 10),
+                                      decoration: BoxDecoration(
+                                        color: _tabController.index == 0
+                                            ? Colors.white
+                                            : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(6),
                                       ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        'Buy Items',
+                                      child: Text(
+                                        'Login',
+                                        textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          color: Colors.grey.shade600,
                                           fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: _tabController.index == 0
+                                              ? const Color(0xFF2D2D2D)
+                                              : const Color(0xFF8B8B8B),
                                         ),
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                                 Expanded(
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.location_on,
-                                        color: const Color(0xFF4F46E5),
-                                        size: 28,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      _tabController.animateTo(1);
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 10),
+                                      decoration: BoxDecoration(
+                                        color: _tabController.index == 1
+                                            ? Colors.white
+                                            : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(6),
                                       ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        'Sell Nearby',
+                                      child: Text(
+                                        'Sign Up',
+                                        textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          color: Colors.grey.shade600,
                                           fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: _tabController.index == 1
+                                              ? const Color(0xFF2D2D2D)
+                                              : const Color(0xFF8B8B8B),
                                         ),
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Tab Views
+                          SizedBox(
+                            height: 280,
+                            child: TabBarView(
+                              controller: _tabController,
+                              children: [
+                                _buildLoginForm(),
+                                _buildSignupForm(),
+                              ],
+                            ),
+                          ),
+
+                          // Divider
+                          const Divider(height: 32, color: Color(0xFFE5E5E5)),
+
+                          // Features
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFF5F5FF),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        Icons.shopping_bag_outlined,
+                                        color: Color(0xFF5B4EE5),
+                                        size: 24,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      'Buy Items',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Color(0xFF6B6B6B),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFF5F5FF),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        Icons.location_on,
+                                        color: Color(0xFF5B4EE5),
+                                        size: 24,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      'Sell Nearby',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Color(0xFF6B6B6B),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
               ),
             ),
           ),
@@ -348,19 +373,33 @@ class _LoginScreenState extends State<LoginScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Username',
             style: TextStyle(
-              fontWeight: FontWeight.w500,
               fontSize: 14,
-              color: Colors.grey.shade900,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF2D2D2D),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           TextFormField(
             controller: _loginUsernameController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Enter username',
+              hintStyle: const TextStyle(
+                color: Color(0xFFB0B0B0),
+                fontSize: 14,
+              ),
+              filled: true,
+              fillColor: const Color(0xFFF8F8F8),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -369,21 +408,35 @@ class _LoginScreenState extends State<LoginScreen>
               return null;
             },
           ),
-          const SizedBox(height: 12),
-          Text(
+          const SizedBox(height: 16),
+          const Text(
             'Password',
             style: TextStyle(
-              fontWeight: FontWeight.w500,
               fontSize: 14,
-              color: Colors.grey.shade900,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF2D2D2D),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           TextFormField(
             controller: _loginPasswordController,
             obscureText: true,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: '••••••••',
+              hintStyle: const TextStyle(
+                color: Color(0xFFB0B0B0),
+                fontSize: 14,
+              ),
+              filled: true,
+              fillColor: const Color(0xFFF8F8F8),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -392,17 +445,16 @@ class _LoginScreenState extends State<LoginScreen>
               return null;
             },
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
-            height: 40,
+            height: 48,
             child: ElevatedButton(
               onPressed: _isLoading ? null : _handleLogin,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF4F46E5), // indigo-600
+                backgroundColor: const Color(0xFF5B4EE5),
                 foregroundColor: Colors.white,
-                disabledBackgroundColor: const Color(0xFF4F46E5).withOpacity(0.6),
-                disabledForegroundColor: Colors.white.withOpacity(0.7),
+                disabledBackgroundColor: const Color(0xFF5B4EE5).withOpacity(0.6),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -411,27 +463,24 @@ class _LoginScreenState extends State<LoginScreen>
               child: Text(
                 _isLoading ? 'Logging in...' : 'Login',
                 style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Center(
             child: TextButton(
-              onPressed: () {
-                // Forgot password logic
-              },
+              onPressed: () {},
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF4F46E5),
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                foregroundColor: const Color(0xFF5B4EE5),
               ),
               child: const Text(
                 'Forgot password?',
                 style: TextStyle(
                   fontSize: 14,
-                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
@@ -448,19 +497,33 @@ class _LoginScreenState extends State<LoginScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Full Name',
               style: TextStyle(
-                fontWeight: FontWeight.w500,
                 fontSize: 14,
-                color: Colors.grey.shade900,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF2D2D2D),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             TextFormField(
               controller: _signupFullNameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'John Doe',
+                hintStyle: const TextStyle(
+                  color: Color(0xFFB0B0B0),
+                  fontSize: 14,
+                ),
+                filled: true,
+                fillColor: const Color(0xFFF8F8F8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -469,20 +532,34 @@ class _LoginScreenState extends State<LoginScreen>
                 return null;
               },
             ),
-            const SizedBox(height: 12),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Username',
               style: TextStyle(
-                fontWeight: FontWeight.w500,
                 fontSize: 14,
-                color: Colors.grey.shade900,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF2D2D2D),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             TextFormField(
               controller: _signupUsernameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Enter username',
+                hintStyle: const TextStyle(
+                  color: Color(0xFFB0B0B0),
+                  fontSize: 14,
+                ),
+                filled: true,
+                fillColor: const Color(0xFFF8F8F8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -491,22 +568,35 @@ class _LoginScreenState extends State<LoginScreen>
                 return null;
               },
             ),
-            const SizedBox(height: 12),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Date of Birth',
               style: TextStyle(
-                fontWeight: FontWeight.w500,
                 fontSize: 14,
-                color: Colors.grey.shade900,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF2D2D2D),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             TextFormField(
               controller: _signupDobController,
               readOnly: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: '02-11-2025',
-                suffixIcon: Icon(Icons.calendar_today, size: 20),
+                hintStyle: const TextStyle(
+                  color: Color(0xFFB0B0B0),
+                  fontSize: 14,
+                ),
+                filled: true,
+                fillColor: const Color(0xFFF8F8F8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
               ),
               onTap: _selectDate,
               validator: (value) {
@@ -516,21 +606,35 @@ class _LoginScreenState extends State<LoginScreen>
                 return null;
               },
             ),
-            const SizedBox(height: 12),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Password',
               style: TextStyle(
-                fontWeight: FontWeight.w500,
                 fontSize: 14,
-                color: Colors.grey.shade900,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF2D2D2D),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             TextFormField(
               controller: _signupPasswordController,
               obscureText: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: '••••••••',
+                hintStyle: const TextStyle(
+                  color: Color(0xFFB0B0B0),
+                  fontSize: 14,
+                ),
+                filled: true,
+                fillColor: const Color(0xFFF8F8F8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -539,21 +643,35 @@ class _LoginScreenState extends State<LoginScreen>
                 return null;
               },
             ),
-            const SizedBox(height: 12),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Re-enter Password',
               style: TextStyle(
-                fontWeight: FontWeight.w500,
                 fontSize: 14,
-                color: Colors.grey.shade900,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF2D2D2D),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             TextFormField(
               controller: _signupRePasswordController,
               obscureText: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: '••••••••',
+                hintStyle: const TextStyle(
+                  color: Color(0xFFB0B0B0),
+                  fontSize: 14,
+                ),
+                filled: true,
+                fillColor: const Color(0xFFF8F8F8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -562,17 +680,16 @@ class _LoginScreenState extends State<LoginScreen>
                 return null;
               },
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
-              height: 40,
+              height: 48,
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _handleSignup,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4F46E5), // indigo-600
+                  backgroundColor: const Color(0xFF5B4EE5),
                   foregroundColor: Colors.white,
-                  disabledBackgroundColor: const Color(0xFF4F46E5).withOpacity(0.6),
-                  disabledForegroundColor: Colors.white.withOpacity(0.7),
+                  disabledBackgroundColor: const Color(0xFF5B4EE5).withOpacity(0.6),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -581,8 +698,8 @@ class _LoginScreenState extends State<LoginScreen>
                 child: Text(
                   _isLoading ? 'Creating account...' : 'Sign Up',
                   style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
