@@ -1,27 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const NearBytApp());
-}
-
-class NearBytApp extends StatelessWidget {
-  const NearBytApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Login Screen for Nearbyt',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.indigo,
-        useMaterial3: false,
-        scaffoldBackgroundColor: const Color(0xFFE8E9F3),
-      ),
-      home: const LoginScreen(),
-    );
-  }
-}
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -49,10 +27,19 @@ class _LoginScreenState extends State<LoginScreen>
   final _loginFormKey = GlobalKey<FormState>();
   final _signupFormKey = GlobalKey<FormState>();
 
+  // Get current date formatted
+  String get currentDateFormatted {
+    final now = DateTime.now();
+    return '${now.day.toString().padLeft(2, '0')}-${now.month.toString().padLeft(2, '0')}-${now.year}';
+  }
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -224,10 +211,10 @@ class _LoginScreenState extends State<LoginScreen>
                                   child: GestureDetector(
                                     onTap: () {
                                       _tabController.animateTo(0);
-                                      setState(() {});
                                     },
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(vertical: 10),
+                                      padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
                                       decoration: BoxDecoration(
                                         color: _tabController.index == 0
                                             ? Colors.white
@@ -252,10 +239,10 @@ class _LoginScreenState extends State<LoginScreen>
                                   child: GestureDetector(
                                     onTap: () {
                                       _tabController.animateTo(1);
-                                      setState(() {});
                                     },
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(vertical: 10),
+                                      padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
                                       decoration: BoxDecoration(
                                         color: _tabController.index == 1
                                             ? Colors.white
@@ -281,16 +268,13 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                           const SizedBox(height: 20),
 
-                          // Tab Views
-                          SizedBox(
-                            height: 280,
-                            child: TabBarView(
-                              controller: _tabController,
-                              children: [
-                                _buildLoginForm(),
-                                _buildSignupForm(),
-                              ],
-                            ),
+                          // Tab Content - Using IndexedStack instead of TabBarView
+                          IndexedStack(
+                            index: _tabController.index,
+                            children: [
+                              _buildLoginForm(),
+                              _buildSignupForm(),
+                            ],
                           ),
 
                           // Divider
@@ -372,6 +356,7 @@ class _LoginScreenState extends State<LoginScreen>
       key: _loginFormKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
             'Username',
@@ -454,7 +439,8 @@ class _LoginScreenState extends State<LoginScreen>
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF5B4EE5),
                 foregroundColor: Colors.white,
-                disabledBackgroundColor: const Color(0xFF5B4EE5).withOpacity(0.6),
+                disabledBackgroundColor:
+                const Color(0xFF5B4EE5).withOpacity(0.6),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -493,219 +479,219 @@ class _LoginScreenState extends State<LoginScreen>
   Widget _buildSignupForm() {
     return Form(
       key: _signupFormKey,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Full Name',
-              style: TextStyle(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'Full Name',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF2D2D2D),
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _signupFullNameController,
+            decoration: InputDecoration(
+              hintText: 'John Doe',
+              hintStyle: const TextStyle(
+                color: Color(0xFFB0B0B0),
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF2D2D2D),
+              ),
+              filled: true,
+              fillColor: const Color(0xFFF8F8F8),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
               ),
             ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _signupFullNameController,
-              decoration: InputDecoration(
-                hintText: 'John Doe',
-                hintStyle: const TextStyle(
-                  color: Color(0xFFB0B0B0),
-                  fontSize: 14,
-                ),
-                filled: true,
-                fillColor: const Color(0xFFF8F8F8),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter full name';
-                }
-                return null;
-              },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter full name';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Username',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF2D2D2D),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Username',
-              style: TextStyle(
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _signupUsernameController,
+            decoration: InputDecoration(
+              hintText: 'Enter username',
+              hintStyle: const TextStyle(
+                color: Color(0xFFB0B0B0),
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF2D2D2D),
+              ),
+              filled: true,
+              fillColor: const Color(0xFFF8F8F8),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
               ),
             ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _signupUsernameController,
-              decoration: InputDecoration(
-                hintText: 'Enter username',
-                hintStyle: const TextStyle(
-                  color: Color(0xFFB0B0B0),
-                  fontSize: 14,
-                ),
-                filled: true,
-                fillColor: const Color(0xFFF8F8F8),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter username';
-                }
-                return null;
-              },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter username';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Date of Birth',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF2D2D2D),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Date of Birth',
-              style: TextStyle(
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _signupDobController,
+            readOnly: true,
+            decoration: InputDecoration(
+              hintText: currentDateFormatted,
+              hintStyle: const TextStyle(
+                color: Color(0xFFB0B0B0),
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF2D2D2D),
+              ),
+              filled: true,
+              fillColor: const Color(0xFFF8F8F8),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
               ),
             ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _signupDobController,
-              readOnly: true,
-              decoration: InputDecoration(
-                hintText: '02-11-2025',
-                hintStyle: const TextStyle(
-                  color: Color(0xFFB0B0B0),
-                  fontSize: 14,
-                ),
-                filled: true,
-                fillColor: const Color(0xFFF8F8F8),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-              ),
-              onTap: _selectDate,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please select date of birth';
-                }
-                return null;
-              },
+            onTap: _selectDate,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please select date of birth';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Password',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF2D2D2D),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Password',
-              style: TextStyle(
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _signupPasswordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              hintText: '••••••••',
+              hintStyle: const TextStyle(
+                color: Color(0xFFB0B0B0),
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF2D2D2D),
+              ),
+              filled: true,
+              fillColor: const Color(0xFFF8F8F8),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
               ),
             ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _signupPasswordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: '••••••••',
-                hintStyle: const TextStyle(
-                  color: Color(0xFFB0B0B0),
-                  fontSize: 14,
-                ),
-                filled: true,
-                fillColor: const Color(0xFFF8F8F8),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter password';
-                }
-                return null;
-              },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter password';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Re-enter Password',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF2D2D2D),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Re-enter Password',
-              style: TextStyle(
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _signupRePasswordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              hintText: '••••••••',
+              hintStyle: const TextStyle(
+                color: Color(0xFFB0B0B0),
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF2D2D2D),
+              ),
+              filled: true,
+              fillColor: const Color(0xFFF8F8F8),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
               ),
             ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _signupRePasswordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: '••••••••',
-                hintStyle: const TextStyle(
-                  color: Color(0xFFB0B0B0),
-                  fontSize: 14,
-                ),
-                filled: true,
-                fillColor: const Color(0xFFF8F8F8),
-                border: OutlineInputBorder(
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please re-enter password';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : _handleSignup,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF5B4EE5),
+                foregroundColor: Colors.white,
+                disabledBackgroundColor:
+                const Color(0xFF5B4EE5).withOpacity(0.6),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
                 ),
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please re-enter password';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : _handleSignup,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF5B4EE5),
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: const Color(0xFF5B4EE5).withOpacity(0.6),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text(
-                  _isLoading ? 'Creating account...' : 'Sign Up',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
+              child: Text(
+                _isLoading ? 'Creating account...' : 'Sign Up',
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
