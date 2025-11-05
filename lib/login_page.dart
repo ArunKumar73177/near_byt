@@ -59,9 +59,19 @@ class _LoginScreenState extends State<LoginScreen>
     if (!_loginFormKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
+    // Simulate API call delay
     await Future.delayed(const Duration(seconds: 1));
     setState(() => _isLoading = false);
-    print('Login attempted with: ${_loginUsernameController.text}');
+
+    // --- START OF REQUIRED CHANGE ---
+    // If the login was successful (replace this conditional check with actual logic)
+    // For now, we'll assume it's successful and navigate.
+    print('Login successful for: ${_loginUsernameController.text}');
+
+    // Navigate to the '/main' route and replace the current route,
+    // so the user cannot go back to the login screen using the back button.
+    Navigator.of(context).pushReplacementNamed('/main');
+    // --- END OF REQUIRED CHANGE ---
   }
 
   Future<void> _handleSignup() async {
@@ -81,6 +91,11 @@ class _LoginScreenState extends State<LoginScreen>
     await Future.delayed(const Duration(seconds: 1));
     setState(() => _isLoading = false);
     print('Signup attempted with: ${_signupUsernameController.text}');
+
+    // Optional: Navigate to main page or show success message after signup
+    // if (signupWasSuccessful) {
+    //   Navigator.of(context).pushReplacementNamed('/main');
+    // }
   }
 
   Future<void> _selectDate() async {
