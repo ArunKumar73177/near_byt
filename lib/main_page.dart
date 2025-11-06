@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Main Page with Bottom Navigation
 class MainPage extends StatefulWidget {
@@ -1058,7 +1059,6 @@ class _AddProductPageState extends State<AddProductPage> {
         const SnackBar(content: Text('Product listed successfully!')),
       );
 
-      // Reset form
       _formKey.currentState!.reset();
       _titleController.clear();
       _priceController.clear();
@@ -1091,7 +1091,6 @@ class _AddProductPageState extends State<AddProductPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Images Section
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -1180,7 +1179,6 @@ class _AddProductPageState extends State<AddProductPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Basic Details
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -1271,7 +1269,6 @@ class _AddProductPageState extends State<AddProductPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Description
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -1293,7 +1290,6 @@ class _AddProductPageState extends State<AddProductPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Location
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -1314,7 +1310,6 @@ class _AddProductPageState extends State<AddProductPage> {
                 ),
               ),
               const SizedBox(height: 24),
-              // Submit Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -1495,9 +1490,45 @@ class NotificationsPage extends StatelessWidget {
   }
 }
 
-// Account Page
+// Account Page WITH LOGOUT FUNCTIONALITY
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
+
+  // LOGOUT FUNCTION - This handles user logout
+  Future<void> _handleLogout(BuildContext context) async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldLogout == true) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', false);
+      await prefs.remove('username');
+      await prefs.remove('fullName');
+
+      if (!context.mounted) return;
+
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        '/login',
+            (route) => false,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1532,7 +1563,6 @@ class AccountPage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Profile Card
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -1634,7 +1664,6 @@ class AccountPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            // Menu Items
             Card(
               child: Column(
                 children: [
@@ -1647,7 +1676,6 @@ class AccountPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            // Active Listings
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -1722,8 +1750,7 @@ class AccountPage extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '₹ ${(product['price'] as int).toStringAsFixed(
-                                  0)}',
+                              '₹ ${(product['price'] as int).toStringAsFixed(0)}',
                               style: const TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold,
@@ -1747,11 +1774,11 @@ class AccountPage extends StatelessWidget {
               );
             }).toList(),
             const SizedBox(height: 16),
-            // Logout Button
+            // LOGOUT BUTTON - Updated with logout function
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
-                onPressed: () {},
+                onPressed: () => _handleLogout(context),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   side: const BorderSide(color: Colors.red),
