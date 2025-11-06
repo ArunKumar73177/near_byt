@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-// Assuming LoginScreen is the name of the widget in this file
+import 'package:shared_preferences/shared_preferences.dart';
 import 'login_page.dart';
-// We need to import the main page as well
 import 'main_page.dart';
 
 void main() {
@@ -21,23 +20,105 @@ class MyApp extends StatelessWidget {
         useMaterial3: false,
         scaffoldBackgroundColor: const Color(0xFFE8E9F3),
       ),
-
-      // 1. Set the initial route to the login screen
-      initialRoute: '/login',
-
-      // 2. Define all the application routes
+      // Use SplashScreen to check login status
+      home: const SplashScreen(),
       routes: {
-        // Route for the login screen
         '/login': (context) => const LoginScreen(),
-        // Route for the main page (assuming the widget is called MainPage)
         '/main': (context) => const MainPage(),
       },
-
-      // Removed: home: const LoginScreen(),
     );
   }
 }
 
-// NOTE: You will need to make sure the MainPage widget exists in main_page.dart
-// Example:
-// class MainPage extends StatelessWidget { ... }
+// Splash Screen to check login status
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    // Add a small delay for splash effect
+    await Future.delayed(const Duration(milliseconds: 1500));
+
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    if (!mounted) return;
+
+    if (isLoggedIn) {
+      // User is logged in, navigate to main page
+      Navigator.of(context).pushReplacementNamed('/main');
+    } else {
+      // User is not logged in, navigate to login page
+      Navigator.of(context).pushReplacementNamed('/login');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF2563EB),
+                    Color(0xFF9333EA),
+                    Color(0xFFEC4899),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Center(
+                child: Text(
+                  'N',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 40,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [
+                  Color(0xFF2563EB),
+                  Color(0xFF9333EA),
+                  Color(0xFFEC4899),
+                ],
+              ).createShader(bounds),
+              child: const Text(
+                'NearByt',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2563EB)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
