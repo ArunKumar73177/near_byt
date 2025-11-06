@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -63,15 +64,17 @@ class _LoginScreenState extends State<LoginScreen>
     await Future.delayed(const Duration(seconds: 1));
     setState(() => _isLoading = false);
 
-    // --- START OF REQUIRED CHANGE ---
-    // If the login was successful (replace this conditional check with actual logic)
-    // For now, we'll assume it's successful and navigate.
+    // Save login status to shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('username', _loginUsernameController.text);
+
     print('Login successful for: ${_loginUsernameController.text}');
 
-    // Navigate to the '/main' route and replace the current route,
-    // so the user cannot go back to the login screen using the back button.
+    if (!mounted) return;
+
+    // Navigate to the '/main' route and replace the current route
     Navigator.of(context).pushReplacementNamed('/main');
-    // --- END OF REQUIRED CHANGE ---
   }
 
   Future<void> _handleSignup() async {
@@ -92,10 +95,16 @@ class _LoginScreenState extends State<LoginScreen>
     setState(() => _isLoading = false);
     print('Signup attempted with: ${_signupUsernameController.text}');
 
-    // Optional: Navigate to main page or show success message after signup
-    // if (signupWasSuccessful) {
-    //   Navigator.of(context).pushReplacementNamed('/main');
-    // }
+    // After successful signup, save login status
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('username', _signupUsernameController.text);
+    await prefs.setString('fullName', _signupFullNameController.text);
+
+    if (!mounted) return;
+
+    // Navigate to main page after signup
+    Navigator.of(context).pushReplacementNamed('/main');
   }
 
   Future<void> _selectDate() async {
