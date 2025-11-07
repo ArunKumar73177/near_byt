@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'edit_profile.dart';
+
 // Main Page with Bottom Navigation
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -1491,8 +1493,33 @@ class NotificationsPage extends StatelessWidget {
 }
 
 // Account Page WITH LOGOUT FUNCTIONALITY
-class AccountPage extends StatelessWidget {
+class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
+
+  @override
+  State<AccountPage> createState() => _AccountPageState();
+}
+
+class _AccountPageState extends State<AccountPage> {
+  String _fullName = 'John Doe';
+  String _email = 'john.doe@email.com';
+  String _profileImage = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _fullName = prefs.getString('fullName') ?? 'John Doe';
+      _email = prefs.getString('email') ?? 'john.doe@email.com';
+      _profileImage = prefs.getString('profileImage') ??
+          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200';
+    });
+  }
 
   // LOGOUT FUNCTION - This handles user logout
   Future<void> _handleLogout(BuildContext context) async {
@@ -1570,26 +1597,24 @@ class AccountPage extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const CircleAvatar(
+                        CircleAvatar(
                           radius: 40,
-                          backgroundImage: NetworkImage(
-                            'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200',
-                          ),
+                          backgroundImage: NetworkImage(_profileImage),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'John Doe',
-                                style: TextStyle(
+                              Text(
+                                _fullName,
+                                style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                'john.doe@email.com',
+                                _email,
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
                               Text(
@@ -1603,7 +1628,18 @@ class AccountPage extends StatelessWidget {
                           ),
                         ),
                         OutlinedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const EditProfilePage(),
+                              ),
+                            );
+                            // If profile was updated, refresh the page
+                            if (result == true && mounted) {
+                              _loadUserData();
+                            }
+                          },
                           child: const Text('Edit'),
                         ),
                       ],
