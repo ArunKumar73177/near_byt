@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_page.dart';
 import 'main_page.dart';
+import 'edit_profile.dart';
 
 void main() {
   runApp(const MyApp());
