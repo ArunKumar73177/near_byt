@@ -1,16 +1,45 @@
-# near_byt
+near_byt
 
-A new Flutter project.
+A simple local marketplace app made with Flutter. Users can upload products they want to sell, and other users can discover and buy those products within a nearby radius — similar to OLX but focused on local, close-distance deals.
 
-## Getting Started
+Features
 
-This project is a starting point for a Flutter application.
+Upload products with images, price, and description
 
-A few resources to get you started if this is your first Flutter project:
+Browse items available near your location
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Set radius to view products (e.g., 2–10 km)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Chat directly with sellers/buyers
+
+Manage your own listings
+
+Simple and clean UI
+
+Tech Used
+
+Flutter (Dart)
+
+Firebase / Supabase (backend & storage)
+
+Google Maps API / Geolocator (location services)
+
+Getting Started
+
+Clone the project:
+
+git clone https://github.com/your-username/near_byt.git
+
+
+Install dependencies:
+
+flutter pub get
+
+
+Run the app:
+
+flutter run
+
+About
+
+near_byt is built to make buying and selling within your local area fast and easy. No long deliveries, no far-away sellers — everything happens nearby.
