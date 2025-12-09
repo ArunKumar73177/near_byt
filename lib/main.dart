@@ -170,6 +170,7 @@ class EditProfilePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 // Mock profile update success
+                // Pop with true to signal a potential update to AccountPage
                 Navigator.pop(context, true);
               },
               child: const Text('Save Profile (Mock)'),
@@ -181,7 +182,7 @@ class EditProfilePage extends StatelessWidget {
   }
 }
 
-// --- Placeholder Pages for Account Menu Navigation (Used by AccountPage) ---
+// --- Placeholder Pages for Account Menu Navigation (Used by AccountPage in main_page.dart) ---
 class MyListingsPage extends StatelessWidget {
   const MyListingsPage({super.key});
   @override
