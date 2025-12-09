@@ -1,26 +1,10 @@
+// lib/main_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-// Note: Assuming 'edit_profile.dart' exists and contains the EditProfilePage class
-// For this single file rewrite, I will define a basic placeholder for EditProfilePage
-// to make the provided code runnable.
-
-/// Placeholder for the imported file 'edit_profile.dart'
-class EditProfilePage extends StatelessWidget {
-  const EditProfilePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-      ),
-      body: const Center(
-        child: Text('Edit Profile Form will be here.'),
-      ),
-    );
-  }
-}
+// Import the necessary pages defined in main.dart (placeholders)
+// This is crucial for navigation (EditProfilePage, MyListingsPage, etc.)
+import 'main.dart';
 
 // Main Page with Bottom Navigation
 class MainPage extends StatefulWidget {
@@ -419,7 +403,7 @@ class _HomePageState extends State<HomePage> {
 class ProductCard extends StatelessWidget {
   final Product product;
 
-  const ProductCard({super.key, required this.product});
+  const ProductCard({super.key, required final this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -563,7 +547,7 @@ class ProductCard extends StatelessWidget {
 class ProductDetailPage extends StatefulWidget {
   final Product product;
 
-  const ProductDetailPage({super.key, required this.product});
+  const ProductDetailPage({super.key, required final this.product});
 
   @override
   State<ProductDetailPage> createState() => _ProductDetailPageState();
@@ -738,7 +722,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         _buildDetailRow('Category', widget.product.category),
                         _buildDetailRow('Condition', widget.product.condition),
                         _buildDetailRow('Location', widget.product.location),
-                        _buildDetailRow('Distance', '${widget.product.distance} km away'),
+                        _buildDetailRow(
+                            'Distance', '${widget.product.distance} km away'),
                       ],
                     ),
                   ),
@@ -1033,13 +1018,7 @@ class _AddProductPageState extends State<AddProductPage> {
     'Other'
   ];
 
-  final List<String> conditions = [
-    'New',
-    'Like New',
-    'Good',
-    'Fair',
-    'Used'
-  ];
+  final List<String> conditions = ['New', 'Like New', 'Good', 'Fair', 'Used'];
 
   void _addImage() {
     if (images.length < 5) {
@@ -1511,7 +1490,7 @@ class NotificationsPage extends StatelessWidget {
   }
 }
 
-// Account Page WITH LOGOUT FUNCTIONALITY
+// Account Page (Fixed to include full menu navigation)
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
 
@@ -1520,7 +1499,6 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  // Initial values set to match the provided image closely
   String _fullName = 'Arun Sharma';
   String _email = 'arunsharma73177@gmail.co';
   String _memberSince = 'Member since Jan 2024';
@@ -1539,11 +1517,9 @@ class _AccountPageState extends State<AccountPage> {
       _email = prefs.getString('email') ?? 'arunsharma73177@gmail.com';
       _profileImage = prefs.getString('profileImage') ??
           'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200';
-      // Note: 'Member since' date is hardcoded for simplicity in this example
     });
   }
 
-  // LOGOUT FUNCTION - This handles user logout
   Future<void> _handleLogout(BuildContext context) async {
     final shouldLogout = await showDialog<bool>(
       context: context,
@@ -1572,12 +1548,38 @@ class _AccountPageState extends State<AccountPage> {
 
       if (!context.mounted) return;
 
-      // Navigate to a login screen (assuming '/login' route exists)
+      // Navigate to a login screen (assuming '/login' route exists in main.dart)
       Navigator.of(context).pushNamedAndRemoveUntil(
         '/login',
             (route) => false,
       );
     }
+  }
+
+  // Function to build a reusable menu item with navigation
+  Widget _buildMenuItem(IconData icon, String label, String? count,
+      VoidCallback? onTap) {
+    return ListTile(
+      onTap: onTap, // Added onTap handler
+      leading: Icon(icon, color: Colors.grey[600]),
+      title: Text(label),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (count != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(count),
+            ),
+          const SizedBox(width: 8),
+          const Icon(Icons.chevron_right, color: Colors.grey),
+        ],
+      ),
+    );
   }
 
   @override
@@ -1589,14 +1591,16 @@ class _AccountPageState extends State<AccountPage> {
         'price': 85000,
         'status': 'Active',
         'views': 234,
-        'image': 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=200',
+        'image':
+        'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=200',
       },
       {
         'title': 'Mountain Bike - Firefox',
         'price': 15000,
         'status': 'Sold',
         'views': 456,
-        'image': 'https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=200',
+        'image':
+        'https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=200',
       },
     ];
 
@@ -1621,20 +1625,21 @@ class _AccountPageState extends State<AccountPage> {
                   children: [
                     Row(
                       children: [
-                        // Profile Image (Blue circle if image fails to load, matching screenshot style)
+                        // Profile Image
                         CircleAvatar(
                           radius: 40,
                           backgroundColor: Colors.blue[800],
                           backgroundImage: NetworkImage(_profileImage),
                           onBackgroundImageError: (exception, stackTrace) {
-                            // Render the blue circle from the screenshot if image fails
                             setState(() {
-                              _profileImage = ''; // Clear image to show background
+                              _profileImage = '';
                             });
                           },
                           child: _profileImage.isEmpty
                               ? Text(
-                            _fullName.isNotEmpty ? _fullName[0].toUpperCase() : 'A',
+                            _fullName.isNotEmpty
+                                ? _fullName[0].toUpperCase()
+                                : 'A',
                             style: const TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -1674,10 +1679,10 @@ class _AccountPageState extends State<AccountPage> {
                             final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
+                                // EditProfilePage is imported from main.dart
                                 builder: (context) => const EditProfilePage(),
                               ),
                             );
-                            // If profile was updated, refresh the page
                             if (result == true && mounted) {
                               _loadUserData();
                             }
@@ -1714,8 +1719,8 @@ class _AccountPageState extends State<AccountPage> {
                             const Text(
                               '1',
                               style: TextStyle(
-                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
+                                fontSize: 20,
                               ),
                             ),
                           ],
@@ -1742,15 +1747,45 @@ class _AccountPageState extends State<AccountPage> {
               ),
             ),
             const SizedBox(height: 16),
-            // Menu Items Section
+            // Menu Items Section (WITH NAVIGATION)
             Card(
               child: Column(
                 children: [
-                  _buildMenuItem(Icons.shopping_bag, 'My Listings', '2'),
-                  _buildMenuItem(Icons.favorite, 'Favorites', '8'),
-                  _buildMenuItem(Icons.star, 'Reviews', '0'),
-                  _buildMenuItem(Icons.settings, 'Settings', null),
-                  _buildMenuItem(Icons.help, 'Help & Support', null),
+                  _buildMenuItem(Icons.shopping_bag, 'My Listings', '2', () {
+                    // Navigate to MyListingsPage (defined in main.dart)
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MyListingsPage()));
+                  }),
+                  _buildMenuItem(Icons.favorite, 'Favorites', '8', () {
+                    // Navigate to FavoritesPage (defined in main.dart)
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const FavoritesPage()));
+                  }),
+                  _buildMenuItem(Icons.star, 'Reviews', '0', () {
+                    // Navigate to ReviewsPage (defined in main.dart)
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ReviewsPage()));
+                  }),
+                  _buildMenuItem(Icons.settings, 'Settings', null, () {
+                    // Navigate to SettingsPage (defined in main.dart)
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SettingsPage()));
+                  }),
+                  _buildMenuItem(Icons.help, 'Help & Support', null, () {
+                    // Navigate to HelpAndSupportPage (defined in main.dart)
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HelpAndSupportPage()));
+                  }),
                 ],
               ),
             ),
@@ -1854,7 +1889,7 @@ class _AccountPageState extends State<AccountPage> {
               );
             }).toList(),
             const SizedBox(height: 16),
-            // LOGOUT BUTTON - Updated with logout function
+            // LOGOUT BUTTON
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
@@ -1878,29 +1913,6 @@ class _AccountPageState extends State<AccountPage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildMenuItem(IconData icon, String label, String? count) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.grey[600]),
-      title: Text(label),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (count != null)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(count),
-            ),
-          const SizedBox(width: 8),
-          const Icon(Icons.chevron_right, color: Colors.grey),
-        ],
       ),
     );
   }
