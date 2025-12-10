@@ -2,8 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// Import the necessary pages defined in main.dart (placeholders)
-// This is crucial for navigation (EditProfilePage, MyListingsPage, etc.)
+// Import the necessary pages defined in main.dart
 import 'main.dart';
 
 // Main Page with Bottom Navigation
@@ -1490,7 +1489,7 @@ class NotificationsPage extends StatelessWidget {
   }
 }
 
-// Account Page (Fixed to include full menu navigation)
+// Account Page (Fixed to include full menu navigation and dynamic counts)
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
 
@@ -1504,6 +1503,26 @@ class _AccountPageState extends State<AccountPage> {
   String _memberSince = 'Member since Jan 2024';
   String _profileImage = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200';
 
+  // Mock data for active listings
+  final List<Map<String, Object>> userProducts = [
+    {
+      'title': 'Dell XPS 15 Laptop',
+      'price': 85000,
+      'status': 'Active',
+      'views': 234,
+      'image':
+      'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=200',
+    },
+    {
+      'title': 'Mountain Bike - Firefox',
+      'price': 15000,
+      'status': 'Sold',
+      'views': 456,
+      'image':
+      'https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=200',
+    },
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -1513,8 +1532,11 @@ class _AccountPageState extends State<AccountPage> {
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
+      // Use full name saved from login/signup, falling back to mock
       _fullName = prefs.getString('fullName') ?? 'Arun Sharma';
-      _email = prefs.getString('email') ?? 'arunsharma73177@gmail.com';
+      _email = prefs.getString('username') != null
+          ? '${prefs.getString('username')}@temp.com'
+          : 'arunsharma73177@gmail.com';
       _profileImage = prefs.getString('profileImage') ??
           'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200';
     });
@@ -1548,7 +1570,7 @@ class _AccountPageState extends State<AccountPage> {
 
       if (!context.mounted) return;
 
-      // Navigate to a login screen (assuming '/login' route exists in main.dart)
+      // Navigate to a login screen
       Navigator.of(context).pushNamedAndRemoveUntil(
         '/login',
             (route) => false,
@@ -1560,7 +1582,7 @@ class _AccountPageState extends State<AccountPage> {
   Widget _buildMenuItem(IconData icon, String label, String? count,
       VoidCallback? onTap) {
     return ListTile(
-      onTap: onTap, // Added onTap handler
+      onTap: onTap,
       leading: Icon(icon, color: Colors.grey[600]),
       title: Text(label),
       trailing: Row(
@@ -1584,25 +1606,11 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Mock data for active listings
-    final userProducts = [
-      {
-        'title': 'Dell XPS 15 Laptop',
-        'price': 85000,
-        'status': 'Active',
-        'views': 234,
-        'image':
-        'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=200',
-      },
-      {
-        'title': 'Mountain Bike - Firefox',
-        'price': 15000,
-        'status': 'Sold',
-        'views': 456,
-        'image':
-        'https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=200',
-      },
-    ];
+    // 🛠️ Dynamic Count Calculation from Mock Data
+    final activeListingsCount = userProducts.where((p) => p['status'] == 'Active').length;
+    final soldListingsCount = userProducts.where((p) => p['status'] == 'Sold').length;
+    const mockFavoritesCount = 8; // Still mock, can be updated later
+    const mockReviewsCount = 4; // Mocked non-zero value
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -1701,9 +1709,9 @@ class _AccountPageState extends State<AccountPage> {
                               'Listings',
                               style: TextStyle(color: Colors.grey[600]),
                             ),
-                            const Text(
-                              '2',
-                              style: TextStyle(
+                            Text(
+                              activeListingsCount.toString(), // 🛠️ Dynamic
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -1716,9 +1724,9 @@ class _AccountPageState extends State<AccountPage> {
                               'Sold',
                               style: TextStyle(color: Colors.grey[600]),
                             ),
-                            const Text(
-                              '1',
-                              style: TextStyle(
+                            Text(
+                              soldListingsCount.toString(), // 🛠️ Dynamic
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
                               ),
@@ -1747,31 +1755,43 @@ class _AccountPageState extends State<AccountPage> {
               ),
             ),
             const SizedBox(height: 16),
-            // Menu Items Section (WITH NAVIGATION)
+            // Menu Items Section (WITH DYNAMIC COUNTS)
             Card(
               child: Column(
                 children: [
-                  _buildMenuItem(Icons.shopping_bag, 'My Listings', '2', () {
-                    // Navigate to MyListingsPage (defined in main.dart)
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MyListingsPage()));
-                  }),
-                  _buildMenuItem(Icons.favorite, 'Favorites', '8', () {
-                    // Navigate to FavoritesPage (defined in main.dart)
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const FavoritesPage()));
-                  }),
-                  _buildMenuItem(Icons.star, 'Reviews', '0', () {
-                    // Navigate to ReviewsPage (defined in main.dart)
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ReviewsPage()));
-                  }),
+                  _buildMenuItem(
+                      Icons.shopping_bag,
+                      'My Listings',
+                      userProducts.length.toString(), // 🛠️ Dynamic total count
+                          () {
+                        // Navigate to MyListingsPage (defined in main.dart)
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MyListingsPage()));
+                      }),
+                  _buildMenuItem(
+                      Icons.favorite,
+                      'Favorites',
+                      mockFavoritesCount.toString(), // Mocked
+                          () {
+                        // Navigate to FavoritesPage (defined in main.dart)
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const FavoritesPage()));
+                      }),
+                  _buildMenuItem(
+                      Icons.star,
+                      'Reviews',
+                      mockReviewsCount.toString(), // Mocked
+                          () {
+                        // Navigate to ReviewsPage (defined in main.dart)
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const ReviewsPage()));
+                      }),
                   _buildMenuItem(Icons.settings, 'Settings', null, () {
                     // Navigate to SettingsPage (defined in main.dart)
                     Navigator.push(
