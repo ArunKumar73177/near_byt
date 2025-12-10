@@ -3,8 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Import the main application structure (from main_page.dart)
+// Import the main application structure
 import 'main_page.dart';
+
+// Import the actual login screen implementation
+import 'login_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +30,7 @@ class MyApp extends StatelessWidget {
       // Use SplashScreen to check login status
       home: const SplashScreen(),
       routes: {
+        // Now correctly points to the implementation from login_page.dart
         '/login': (context) => const LoginScreen(),
         '/main': (context) => const MainPage(),
       },
@@ -121,30 +125,6 @@ class _SplashScreenState extends State<SplashScreen> {
               valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2563EB)),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// --- Placeholder for 'login_page.dart' (Required for routes) ---
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () async {
-            // Mock successful login
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setBool('isLoggedIn', true);
-            if (!context.mounted) return;
-            Navigator.of(context).pushReplacementNamed('/main');
-          },
-          child: const Text('Mock Login'),
         ),
       ),
     );
