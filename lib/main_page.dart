@@ -5,6 +5,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Import the necessary pages defined in main.dart
 import 'main.dart';
 
+// Import pages from the settings subdirectory to access their data models/counts
+import 'pages_under_settings/my_listings.dart' as listings_page;
+import 'pages_under_settings/favorites.dart' as favorites_page;
+import 'pages_under_settings/reviews.dart' as reviews_page;
+import 'pages_under_settings/settings.dart';
+import 'pages_under_settings/help_and_support.dart';
+
+
 // Main Page with Bottom Navigation
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -135,7 +143,7 @@ final List<Product> mockProducts = [
     category: 'Vehicles',
     condition: 'Used',
     description: '2020 model, well maintained, single owner',
-    seller: 'Amit Shah',
+    seller: 'Arun Sharma', // Changed to Arun Sharma for Listings count matching
     postedDate: '5 hours ago',
   ),
   Product(
@@ -161,7 +169,7 @@ final List<Product> mockProducts = [
     category: 'Electronics',
     condition: 'Like New',
     description: 'i7 processor, 16GB RAM, 512GB SSD',
-    seller: 'Tech Seller',
+    seller: 'Arun Sharma', // Changed to Arun Sharma for Listings count matching
     postedDate: '4 hours ago',
   ),
 ];
@@ -1503,7 +1511,7 @@ class _AccountPageState extends State<AccountPage> {
   String _memberSince = 'Member since Jan 2024';
   String _profileImage = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200';
 
-  // Mock data for active listings
+  // Mock data for active listings (matches the two items shown in the screenshot)
   final List<Map<String, Object>> userProducts = [
     {
       'title': 'Dell XPS 15 Laptop',
@@ -1606,11 +1614,12 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🛠️ Dynamic Count Calculation from Mock Data
+    // 🛠️ Dynamic Count Calculation using models from external pages
+    final totalListingsCount = listings_page.MyListingsPage().userListings.length; // Count: 2
     final activeListingsCount = userProducts.where((p) => p['status'] == 'Active').length;
     final soldListingsCount = userProducts.where((p) => p['status'] == 'Sold').length;
-    const mockFavoritesCount = 8; // Still mock, can be updated later
-    const mockReviewsCount = 4; // Mocked non-zero value
+    final favoritesCount = favorites_page.FavoritesPage.favoriteProductIds.length; // Count: 8
+    final reviewsCount = reviews_page.ReviewsPage().dummyReviews.length; // Count: 4
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -1762,45 +1771,45 @@ class _AccountPageState extends State<AccountPage> {
                   _buildMenuItem(
                       Icons.shopping_bag,
                       'My Listings',
-                      userProducts.length.toString(), // 🛠️ Dynamic total count
+                      totalListingsCount.toString(), // 🛠️ Total Count: 2
                           () {
-                        // Navigate to MyListingsPage (defined in main.dart)
+                        // Navigate to MyListingsPage (using imported class)
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const MyListingsPage()));
+                                builder: (context) => const listings_page.MyListingsPage()));
                       }),
                   _buildMenuItem(
                       Icons.favorite,
                       'Favorites',
-                      mockFavoritesCount.toString(), // Mocked
+                      favoritesCount.toString(), // 🛠️ Total Count: 8
                           () {
-                        // Navigate to FavoritesPage (defined in main.dart)
+                        // Navigate to FavoritesPage (using imported class)
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const FavoritesPage()));
+                                builder: (context) => const favorites_page.FavoritesPage()));
                       }),
                   _buildMenuItem(
                       Icons.star,
                       'Reviews',
-                      mockReviewsCount.toString(), // Mocked
+                      reviewsCount.toString(), // 🛠️ Total Count: 4
                           () {
-                        // Navigate to ReviewsPage (defined in main.dart)
+                        // Navigate to ReviewsPage (using imported class)
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const ReviewsPage()));
+                                builder: (context) => const reviews_page.ReviewsPage()));
                       }),
                   _buildMenuItem(Icons.settings, 'Settings', null, () {
-                    // Navigate to SettingsPage (defined in main.dart)
+                    // Navigate to SettingsPage (using imported class)
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const SettingsPage()));
                   }),
                   _buildMenuItem(Icons.help, 'Help & Support', null, () {
-                    // Navigate to HelpAndSupportPage (defined in main.dart)
+                    // Navigate to HelpAndSupportPage (using imported class)
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -1821,7 +1830,7 @@ class _AccountPageState extends State<AccountPage> {
               ),
             ),
             const SizedBox(height: 12),
-            // Active Listings List
+            // Active Listings List (Uses the fixed two products from userProducts)
             ...userProducts.map((product) {
               return Card(
                 margin: const EdgeInsets.only(bottom: 12),
