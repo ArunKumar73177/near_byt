@@ -6,15 +6,16 @@ import '../main_page.dart'; // Import the Product model and mockProducts
 class MyListingsPage extends StatelessWidget {
   const MyListingsPage({super.key});
 
-  // Dummy list of user's products (matching the AccountPage data)
+  // Dummy list of user's products (matching the AccountPage data - total 2)
   List<Product> get userListings {
-    // Filter by seller 'Arun Sharma' and exclude the 'Sold' one for the "Active" list count
+    // Filter mockProducts where the seller is 'Arun Sharma' (2 products)
     return mockProducts.where((p) => p.seller == 'Arun Sharma').toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final listings = userListings;
+    final totalCount = listings.length;
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -28,7 +29,6 @@ class MyListingsPage extends StatelessWidget {
             icon: const Icon(Icons.add_circle_outline),
             onPressed: () {
               // Navigate to Add Product Page (index 2 in MainPage)
-              // In a real app, we'd navigate to the main screen and change the tab.
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('To add a new listing, use the "Sell" tab on the main screen.')),
               );
@@ -36,7 +36,7 @@ class MyListingsPage extends StatelessWidget {
           ),
         ],
       ),
-      body: listings.isEmpty
+      body: totalCount == 0
           ? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -59,12 +59,26 @@ class MyListingsPage extends StatelessWidget {
           ],
         ),
       )
-          : ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: listings.length,
-        itemBuilder: (context, index) {
-          return ListingItemCard(product: listings[index]);
-        },
+          : Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Text(
+              'Your product listings ($totalCount items).', // Dynamic text: 2 items
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: listings.length,
+              itemBuilder: (context, index) {
+                return ListingItemCard(product: listings[index]);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -77,8 +91,7 @@ class ListingItemCard extends StatelessWidget {
   // Mock status logic to match the screenshot/AccountPage data
   String get status {
     if (product.title == 'Dell XPS 15 Laptop') return 'Active';
-    if (product.title.contains('Bike')) return 'Sold';
-    if (product.title.contains('PS 5')) return 'Active';
+    if (product.title.contains('Classic 350')) return 'Sold'; // Represents the Sold bike listing
     return 'Active';
   }
 
