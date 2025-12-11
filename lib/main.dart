@@ -9,6 +9,14 @@ import 'main_page.dart';
 // Import the actual login screen implementation
 import 'login_page.dart';
 
+// Import the required page classes from pages_under_settings
+import 'pages_under_settings/my_listings.dart';
+import 'pages_under_settings/favorites.dart';
+import 'pages_under_settings/reviews.dart';
+import 'pages_under_settings/settings.dart';
+import 'pages_under_settings/help_and_support.dart';
+
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
@@ -33,6 +41,25 @@ class MyApp extends StatelessWidget {
         // Now correctly points to the implementation from login_page.dart
         '/login': (context) => const LoginScreen(),
         '/main': (context) => const MainPage(),
+      },
+      // Register all the external pages
+      onGenerateRoute: (settings) {
+        if (settings.name == '/my_listings') {
+          return MaterialPageRoute(builder: (context) => const MyListingsPage());
+        }
+        if (settings.name == '/favorites') {
+          return MaterialPageRoute(builder: (context) => const FavoritesPage());
+        }
+        if (settings.name == '/reviews') {
+          return MaterialPageRoute(builder: (context) => const ReviewsPage());
+        }
+        if (settings.name == '/settings') {
+          return MaterialPageRoute(builder: (context) => const SettingsPage());
+        }
+        if (settings.name == '/help_support') {
+          return MaterialPageRoute(builder: (context) => const HelpAndSupportPage());
+        }
+        return null;
       },
     );
   }
@@ -159,56 +186,5 @@ class EditProfilePage extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-// --- Placeholder Pages for Account Menu Navigation (Used by AccountPage in main_page.dart) ---
-class MyListingsPage extends StatelessWidget {
-  const MyListingsPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('My Listings')),
-        body: const Center(child: Text('Your product listings.')));
-  }
-}
-
-class FavoritesPage extends StatelessWidget {
-  const FavoritesPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Favorites')),
-        body: const Center(child: Text('Your favorite products (8 items).')));
-  }
-}
-
-class ReviewsPage extends StatelessWidget {
-  const ReviewsPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Reviews')),
-        body: const Center(child: Text('Your reviews and ratings (0 reviews).')));
-  }
-}
-
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Settings')),
-        body: const Center(child: Text('App settings and preferences.')));
-  }
-}
-
-class HelpAndSupportPage extends StatelessWidget {
-  const HelpAndSupportPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Help & Support')),
-        body: const Center(child: Text('FAQ and support contact.')));
   }
 }
