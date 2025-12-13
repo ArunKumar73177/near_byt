@@ -6,7 +6,7 @@ class ReviewsPage extends StatelessWidget {
   const ReviewsPage({super.key});
 
   // Dummy data for user reviews (as a buyer/seller) - 4 reviews total
-  final List<Map<String, dynamic>> dummyReviews = const [
+  static const List<Map<String, dynamic>> dummyReviews = [
     {
       'reviewer': 'Priya Singh',
       'rating': 5.0,
@@ -31,7 +31,6 @@ class ReviewsPage extends StatelessWidget {
       'role': 'Seller',
       'product': 'Old Gaming Console',
     },
-    // Added review to ensure the total count is 4
     {
       'reviewer': 'New Buyer 123',
       'rating': 4.0,
@@ -68,7 +67,7 @@ class ReviewsPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                 child: Text(
-                  'Your reviews and ratings ($totalReviews reviews).', // Text reflecting the 4 reviews
+                  'Your reviews and ratings ($totalReviews reviews).',
                   style: TextStyle(color: Colors.grey[600]),
                 ),
               ),
@@ -131,8 +130,9 @@ class ReviewsPage extends StatelessWidget {
                     style: TextStyle(color: Colors.grey[500]),
                   ),
                 ),
-              ),
-            ...dummyReviews.map((review) => ReviewTile(review: review)).toList(),
+              )
+            else
+              ...dummyReviews.map((review) => ReviewTile(review: review)),
           ],
         ),
       ),
@@ -147,61 +147,62 @@ class ReviewTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-    child: Padding(
-    padding: const EdgeInsets.all(16),
-    child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-    Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-    Row(
-    children: [
-    Icon(
-    review['role'] == 'Buyer' ? Icons.person : Icons.store,
-    color: Colors.blue,
-    size: 20,
-    ),
-    const SizedBox(width: 8),
-    Text(
-    review['reviewer'] as String,
-    style: const TextStyle(fontWeight: FontWeight.bold),
-    ),
-    ],
-    ),
-    Row(
-    children: [
-    Text(
-    '${review['rating'].toStringAsFixed(1)}',
-    style: const TextStyle(fontWeight: FontWeight.bold),
-    ),
-    const Icon(Icons.star, color: Colors.amber, size: 16),
-    ],
-    ),
-    ],
-    ),
-    const SizedBox(height: 8),
-    Text(
-    review['comment'] as String,
-    style: TextStyle(color: Colors.grey[700]),
-    ),
-    const SizedBox(height: 8),
-    Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-    Text(
-    'On: ${review['product']}',
-    style: TextStyle(color: Colors.grey[500], fontSize: 12),
-    ),
-    Text(
-    review['date'] as String,
-    style: TextStyle(color: Colors.grey[500], fontSize: 12),
-    ),
-    ],
-    ),
-    ],
-    ),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      review['role'] == 'Buyer' ? Icons.person : Icons.store,
+                      color: Colors.blue,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      review['reviewer'] as String,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      '${review['rating'].toStringAsFixed(1)}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const Icon(Icons.star, color: Colors.amber, size: 16),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              review['comment'] as String,
+              style: TextStyle(color: Colors.grey[700]),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'On: ${review['product']}',
+                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                ),
+                Text(
+                  review['date'] as String,
+                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
