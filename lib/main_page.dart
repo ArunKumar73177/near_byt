@@ -12,6 +12,8 @@ import 'pages_under_settings/reviews.dart' as reviews_page;
 import 'pages_under_settings/settings.dart';
 import 'pages_under_settings/help_and_support.dart';
 
+// REVERTED IMPORT: Removing the problematic import 'edit_profile.dart'
+// and relying on main.dart to expose EditProfilePage globally, as suggested by original context.
 
 // Main Page with Bottom Navigation
 class MainPage extends StatefulWidget {
@@ -24,6 +26,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
 
+  // Placeholder classes for the pages not defined in this file (must be in main.dart)
   final List<Widget> _pages = [
     const HomePage(),
     const SearchPage(),
@@ -316,14 +319,15 @@ class _HomePageState extends State<HomePage> {
                                           setModalState(() {
                                             distanceRange = value;
                                           });
-                                          setState(() {});
                                         },
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-                            );
+                            ).then((_) {
+                              setState(() {});
+                            });
                           },
                         ),
                       ],
@@ -410,7 +414,7 @@ class _HomePageState extends State<HomePage> {
 class ProductCard extends StatelessWidget {
   final Product product;
 
-  const ProductCard({super.key, required final this.product});
+  const ProductCard({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -554,7 +558,7 @@ class ProductCard extends StatelessWidget {
 class ProductDetailPage extends StatefulWidget {
   final Product product;
 
-  const ProductDetailPage({super.key, required final this.product});
+  const ProductDetailPage({super.key, required this.product});
 
   @override
   State<ProductDetailPage> createState() => _ProductDetailPageState();
@@ -1614,12 +1618,22 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🛠️ Dynamic Count Calculation using models from external pages
-    final totalListingsCount = listings_page.MyListingsPage().userListings.length; // Count: 2
+    // 🛠️ Dynamic Count Calculation: Creating instances to access public lists
+
+    // FIXING 'Instance member userListings can't be accessed using static access'
+    // Since it's defined as a NON-STATIC getter in my_listings.dart, we must create an instance.
+    final listingsInstance = listings_page.MyListingsPage();
+    final totalListingsCount = listingsInstance.userListings.length;
+
     final activeListingsCount = userProducts.where((p) => p['status'] == 'Active').length;
     final soldListingsCount = userProducts.where((p) => p['status'] == 'Sold').length;
-    final favoritesCount = favorites_page.FavoritesPage.favoriteProductIds.length; // Count: 8
-    final reviewsCount = reviews_page.ReviewsPage().dummyReviews.length; // Count: 4
+
+    // Assuming FavoritesPage.favoriteProductIds is STATIC (Standard practice for a mock ID list)
+    final favoritesCount = favorites_page.FavoritesPage.favoriteProductIds.length;
+
+    // FIX: Using static access, confirmed correct structure by provided reviews.dart code
+    final reviewsCount = reviews_page.ReviewsPage.dummyReviews.length;
+
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -1648,9 +1662,11 @@ class _AccountPageState extends State<AccountPage> {
                           backgroundColor: Colors.blue[800],
                           backgroundImage: NetworkImage(_profileImage),
                           onBackgroundImageError: (exception, stackTrace) {
-                            setState(() {
-                              _profileImage = '';
-                            });
+                            if (mounted) {
+                              setState(() {
+                                _profileImage = '';
+                              });
+                            }
                           },
                           child: _profileImage.isEmpty
                               ? Text(
@@ -1696,7 +1712,7 @@ class _AccountPageState extends State<AccountPage> {
                             final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                // EditProfilePage is imported from main.dart
+                                // Assuming EditProfilePage is globally available via main.dart
                                 builder: (context) => const EditProfilePage(),
                               ),
                             );
@@ -1771,7 +1787,7 @@ class _AccountPageState extends State<AccountPage> {
                   _buildMenuItem(
                       Icons.shopping_bag,
                       'My Listings',
-                      totalListingsCount.toString(), // 🛠️ Total Count: 2
+                      totalListingsCount.toString(), // 🛠️ Total Count
                           () {
                         // Navigate to MyListingsPage (using imported class)
                         Navigator.push(
@@ -1782,7 +1798,7 @@ class _AccountPageState extends State<AccountPage> {
                   _buildMenuItem(
                       Icons.favorite,
                       'Favorites',
-                      favoritesCount.toString(), // 🛠️ Total Count: 8
+                      favoritesCount.toString(), // 🛠️ Total Count
                           () {
                         // Navigate to FavoritesPage (using imported class)
                         Navigator.push(
@@ -1793,7 +1809,7 @@ class _AccountPageState extends State<AccountPage> {
                   _buildMenuItem(
                       Icons.star,
                       'Reviews',
-                      reviewsCount.toString(), // 🛠️ Total Count: 4
+                      reviewsCount.toString(), // 🛠️ Total Count
                           () {
                         // Navigate to ReviewsPage (using imported class)
                         Navigator.push(
