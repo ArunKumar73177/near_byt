@@ -28,7 +28,7 @@ Getting Started
 
 Clone the project:
 
-git clone https://github.com/your-username/near_byt.git
+git clone https://github.com/ArunKumar73177/near_byt.git
 
 
 Install dependencies:
