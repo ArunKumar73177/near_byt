@@ -2,18 +2,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// Import the necessary pages defined in main.dart
 import 'main.dart';
 
-// Import pages from the settings subdirectory to access their data models/counts
+// Import location service
+import 'services/location_service.dart';
+
+// Import pages from the settings subdirectory
 import 'pages_under_settings/my_listings.dart' as listings_page;
 import 'pages_under_settings/favorites.dart' as favorites_page;
 import 'pages_under_settings/reviews.dart' as reviews_page;
 import 'pages_under_settings/settings.dart';
 import 'pages_under_settings/help_and_support.dart';
-
-// REVERTED IMPORT: Removing the problematic import 'edit_profile.dart'
-// and relying on main.dart to expose EditProfilePage globally, as suggested by original context.
 
 // Main Page with Bottom Navigation
 class MainPage extends StatefulWidget {
@@ -26,7 +25,6 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
 
-  // Placeholder classes for the pages not defined in this file (must be in main.dart)
   final List<Widget> _pages = [
     const HomePage(),
     const SearchPage(),
@@ -95,6 +93,8 @@ class Product {
   final String description;
   final String seller;
   final String postedDate;
+  final double latitude;
+  final double longitude;
 
   Product({
     required this.id,
@@ -109,10 +109,12 @@ class Product {
     required this.description,
     required this.seller,
     required this.postedDate,
+    required this.latitude,
+    required this.longitude,
   });
 }
 
-// Mock Data
+// Mock Data with coordinates
 final List<Product> mockProducts = [
   Product(
     id: '1',
@@ -120,6 +122,8 @@ final List<Product> mockProducts = [
     price: 45000,
     location: 'Mumbai, Maharashtra',
     distance: 2.5,
+    latitude: 19.0760,
+    longitude: 72.8777,
     image: 'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=400',
     images: [
       'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=400',
@@ -138,6 +142,8 @@ final List<Product> mockProducts = [
     price: 125000,
     location: 'Pune, Maharashtra',
     distance: 5.8,
+    latitude: 18.5204,
+    longitude: 73.8567,
     image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400',
     images: [
       'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400',
@@ -146,7 +152,7 @@ final List<Product> mockProducts = [
     category: 'Vehicles',
     condition: 'Used',
     description: '2020 model, well maintained, single owner',
-    seller: 'Arun Sharma', // Changed to Arun Sharma for Listings count matching
+    seller: 'Arun Sharma',
     postedDate: '5 hours ago',
   ),
   Product(
@@ -155,6 +161,8 @@ final List<Product> mockProducts = [
     price: 42000,
     location: 'Delhi, NCR',
     distance: 3.2,
+    latitude: 28.7041,
+    longitude: 77.1025,
     image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400',
     category: 'Electronics',
     condition: 'New',
@@ -168,16 +176,18 @@ final List<Product> mockProducts = [
     price: 85000,
     location: 'Hyderabad, Telangana',
     distance: 6.1,
+    latitude: 17.3850,
+    longitude: 78.4867,
     image: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400',
     category: 'Electronics',
     condition: 'Like New',
     description: 'i7 processor, 16GB RAM, 512GB SSD',
-    seller: 'Arun Sharma', // Changed to Arun Sharma for Listings count matching
+    seller: 'Arun Sharma',
     postedDate: '4 hours ago',
   ),
 ];
 
-// Home Page
+// Home Page with Location
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -197,14 +207,99 @@ class _HomePageState extends State<HomePage> {
     'Sports'
   ];
 
+  String _currentLocation = 'Getting location...';
+  double? _userLatitude;
+  double? _userLongitude;
+  bool _isLoadingLocation = true;
+  final LocationService _locationService = LocationService();
+
   @override
-  Widget build(BuildContext context) {
-    final filteredProducts = mockProducts.where((product) {
+  void initState() {
+    super.initState();
+    _loadLocation();
+  }
+
+  Future<void> _loadLocation() async {
+    setState(() {
+      _isLoadingLocation = true;
+    });
+
+    // Try to get saved location first
+    Map<String, dynamic>? savedLocation =
+    await _locationService.getSavedLocation();
+
+    if (savedLocation != null) {
+      setState(() {
+        _currentLocation = savedLocation['fullAddress'] ?? 'Unknown Location';
+        _userLatitude = savedLocation['latitude'];
+        _userLongitude = savedLocation['longitude'];
+        _isLoadingLocation = false;
+      });
+    } else {
+      // No saved location, fetch new one
+      await _fetchNewLocation();
+    }
+  }
+
+  Future<void> _fetchNewLocation() async {
+    setState(() {
+      _isLoadingLocation = true;
+    });
+
+    Map<String, dynamic>? location =
+    await _locationService.fetchAndSaveLocation();
+
+    if (location != null) {
+      setState(() {
+        _currentLocation = location['fullAddress'] ?? 'Unknown Location';
+        _userLatitude = location['latitude'];
+        _userLongitude = location['longitude'];
+        _isLoadingLocation = false;
+      });
+    } else {
+      setState(() {
+        _currentLocation = 'Location unavailable';
+        _isLoadingLocation = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unable to get location. Please enable location services.'),
+            action: SnackBarAction(
+              label: 'Settings',
+              onPressed: LocationService().openAppSettings,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  List<Product> _getFilteredProducts() {
+    return mockProducts.where((product) {
       final categoryMatch =
           selectedCategory == 'All' || product.category == selectedCategory;
-      final distanceMatch = product.distance <= distanceRange;
+
+      // Calculate real distance if user location is available
+      double distance = product.distance;
+      if (_userLatitude != null && _userLongitude != null) {
+        distance = _locationService.calculateDistance(
+          _userLatitude!,
+          _userLongitude!,
+          product.latitude,
+          product.longitude,
+        );
+      }
+
+      final distanceMatch = distance <= distanceRange;
       return categoryMatch && distanceMatch;
     }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredProducts = _getFilteredProducts();
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -255,13 +350,14 @@ class _HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 ShaderMask(
-                                  shaderCallback: (bounds) => const LinearGradient(
-                                    colors: [
-                                      Color(0xFF2563EB),
-                                      Color(0xFF9333EA),
-                                      Color(0xFFEC4899),
-                                    ],
-                                  ).createShader(bounds),
+                                  shaderCallback: (bounds) =>
+                                      const LinearGradient(
+                                        colors: [
+                                          Color(0xFF2563EB),
+                                          Color(0xFF9333EA),
+                                          Color(0xFFEC4899),
+                                        ],
+                                      ).createShader(bounds),
                                   child: const Text(
                                     'NearByt',
                                     style: TextStyle(
@@ -294,7 +390,8 @@ class _HomePageState extends State<HomePage> {
                                   padding: const EdgeInsets.all(24),
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
                                     children: [
                                       const Text(
                                         'Filter Products',
@@ -333,15 +430,44 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
+                  // Location Display with Refresh
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
                       children: [
-                        Icon(Icons.location_on, color: Colors.grey[600], size: 20),
+                        Icon(Icons.location_on,
+                            color: Colors.grey[600], size: 20),
                         const SizedBox(width: 8),
-                        Text(
-                          'Mumbai, Maharashtra',
-                          style: TextStyle(color: Colors.grey[600]),
+                        Expanded(
+                          child: _isLoadingLocation
+                              ? Row(
+                            children: [
+                              SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor:
+                                  AlwaysStoppedAnimation<Color>(
+                                      Colors.grey[600]!),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                _currentLocation,
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            ],
+                          )
+                              : Text(
+                            _currentLocation,
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.refresh, color: Colors.blue[700]),
+                          onPressed: _fetchNewLocation,
+                          tooltip: 'Refresh location',
                         ),
                       ],
                     ),
@@ -353,7 +479,8 @@ class _HomePageState extends State<HomePage> {
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemCount: categories.length,
-                      separatorBuilder: (context, index) => const SizedBox(width: 8),
+                      separatorBuilder: (context, index) =>
+                      const SizedBox(width: 8),
                       itemBuilder: (context, index) {
                         final category = categories[index];
                         final isSelected = selectedCategory == category;
@@ -388,7 +515,8 @@ class _HomePageState extends State<HomePage> {
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         childAspectRatio: 0.75,
                         crossAxisSpacing: 12,
@@ -410,7 +538,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// Product Card Widget
+// Product Card Widget (unchanged)
 class ProductCard extends StatelessWidget {
   final Product product;
 
@@ -515,7 +643,8 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.location_on, size: 14, color: Colors.grey[600]),
+                      Icon(Icons.location_on,
+                          size: 14, color: Colors.grey[600]),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
@@ -533,7 +662,8 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.calendar_today, size: 14, color: Colors.grey[600]),
+                      Icon(Icons.calendar_today,
+                          size: 14, color: Colors.grey[600]),
                       const SizedBox(width: 4),
                       Text(
                         product.postedDate,
@@ -553,6 +683,9 @@ class ProductCard extends StatelessWidget {
     );
   }
 }
+
+// Remaining classes remain the same (ProductDetailPage, SearchPage, AddProductPage, NotificationsPage, AccountPage)
+// ... (include all other classes from your original file unchanged)
 
 // Product Detail Page
 class ProductDetailPage extends StatefulWidget {
