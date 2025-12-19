@@ -264,11 +264,11 @@ class _HomePageState extends State<HomePage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Unable to get location. Please enable location services.'),
+          SnackBar(
+            content: const Text('Unable to get location. Please enable location services.'),
             action: SnackBarAction(
               label: 'Settings',
-              onPressed: LocationService().openAppSettings,
+              onPressed: () => LocationService().openAppSettings(),
             ),
           ),
         );
