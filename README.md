@@ -33,6 +33,8 @@ git clone https://github.com/ArunKumar73177/near_byt.git
 
 Install dependencies:
 
+
+flutter clean
 flutter pub get
 
 
