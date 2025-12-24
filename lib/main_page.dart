@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'main.dart';
+import 'main.dart' hide EditProfilePage;
 
 // Import location service
 import 'services/location_service.dart';
@@ -13,6 +13,7 @@ import 'pages_under_settings/favorites.dart' as favorites_page;
 import 'pages_under_settings/reviews.dart' as reviews_page;
 import 'pages_under_settings/settings.dart';
 import 'pages_under_settings/help_and_support.dart';
+import 'edit_profile.dart';
 
 // Main Page with Bottom Navigation
 class MainPage extends StatefulWidget {
