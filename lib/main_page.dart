@@ -1,19 +1,13 @@
 // lib/main_page.dart
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'main.dart' hide EditProfilePage;
 
-// Import location service
-import 'services/location_service.dart';
-
-// Import pages from the settings subdirectory
-import 'pages_under_settings/my_listings.dart' as listings_page;
-import 'pages_under_settings/favorites.dart' as favorites_page;
-import 'pages_under_settings/reviews.dart' as reviews_page;
-import 'pages_under_settings/settings.dart';
-import 'pages_under_settings/help_and_support.dart';
-import 'edit_profile.dart';
+// Import the new separate page files
+import 'home_page.dart';
+import 'search.dart';
+import 'sell.dart';
+import 'alerts.dart';
+import 'account.dart';
 
 // Main Page with Bottom Navigation
 class MainPage extends StatefulWidget {
@@ -29,8 +23,8 @@ class _MainPageState extends State<MainPage> {
   final List<Widget> _pages = [
     const HomePage(),
     const SearchPage(),
-    const AddProductPage(),
-    const NotificationsPage(),
+    const SellPage(),
+    const AlertsPage(),
     const AccountPage(),
   ];
 
@@ -80,7 +74,7 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-// Models
+// Product Model
 class Product {
   final String id;
   final String title;
@@ -115,8 +109,9 @@ class Product {
   });
 }
 
-// Mock Data with coordinates
+// Mock Data with more products near Meerut (28.9845, 77.7064)
 final List<Product> mockProducts = [
+  // Original products
   Product(
     id: '1',
     title: 'iPhone 13 Pro Max',
@@ -186,360 +181,192 @@ final List<Product> mockProducts = [
     seller: 'Arun Sharma',
     postedDate: '4 hours ago',
   ),
+
+  // New products near Meerut
+  Product(
+    id: '5',
+    title: 'Samsung Galaxy S23 Ultra',
+    price: 89999,
+    location: 'Shastri Nagar, Meerut',
+    distance: 1.2,
+    latitude: 28.9845,
+    longitude: 77.7064,
+    image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400',
+    images: [
+      'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400',
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400',
+    ],
+    category: 'Electronics',
+    condition: 'New',
+    description: '12GB RAM, 256GB Storage, Phantom Black, with warranty',
+    seller: 'Tech Plaza Meerut',
+    postedDate: '3 hours ago',
+  ),
+  Product(
+    id: '6',
+    title: 'Honda City 2019',
+    price: 725000,
+    location: 'Civil Lines, Meerut',
+    distance: 2.3,
+    latitude: 29.0012,
+    longitude: 77.7085,
+    image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=400',
+    images: [
+      'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=400',
+      'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400',
+    ],
+    category: 'Vehicles',
+    condition: 'Used',
+    description: 'VX model, white color, single owner, well maintained',
+    seller: 'Vikram Singh',
+    postedDate: '1 day ago',
+  ),
+  Product(
+    id: '7',
+    title: 'L-Shaped Sofa Set',
+    price: 35000,
+    location: 'Kanker Khera, Meerut',
+    distance: 3.1,
+    latitude: 28.9678,
+    longitude: 77.7234,
+    image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400',
+    category: 'Furniture',
+    condition: 'Like New',
+    description: 'Grey fabric, 6 seater, bought 6 months ago',
+    seller: 'Neha Gupta',
+    postedDate: '2 days ago',
+  ),
+  Product(
+    id: '8',
+    title: 'Apple MacBook Air M2',
+    price: 95000,
+    location: 'Pallavpuram, Meerut',
+    distance: 1.8,
+    latitude: 28.9923,
+    longitude: 77.6945,
+    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
+    images: [
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
+      'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400',
+    ],
+    category: 'Electronics',
+    condition: 'Like New',
+    description: '8GB RAM, 256GB SSD, Midnight color, under warranty',
+    seller: 'Rajesh Verma',
+    postedDate: '5 hours ago',
+  ),
+  Product(
+    id: '9',
+    title: 'Treadmill - Powermax Fitness',
+    price: 22000,
+    location: 'Saket, Meerut',
+    distance: 2.7,
+    latitude: 28.9756,
+    longitude: 77.7156,
+    image: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400',
+    category: 'Sports',
+    condition: 'Good',
+    description: 'Automatic treadmill with incline, perfect working condition',
+    seller: 'Fitness World',
+    postedDate: '6 hours ago',
+  ),
+  Product(
+    id: '10',
+    title: 'Bajaj Pulsar NS200',
+    price: 95000,
+    location: 'Brahmpuri, Meerut',
+    distance: 3.5,
+    latitude: 29.0089,
+    longitude: 77.7123,
+    image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400',
+    category: 'Vehicles',
+    condition: 'Used',
+    description: '2021 model, 18000 km driven, excellent condition',
+    seller: 'Amit Kumar',
+    postedDate: '1 day ago',
+  ),
+  Product(
+    id: '11',
+    title: 'LG 43 inch 4K Smart TV',
+    price: 32000,
+    location: 'Modipuram, Meerut',
+    distance: 4.2,
+    latitude: 29.0234,
+    longitude: 77.6789,
+    image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400',
+    category: 'Electronics',
+    condition: 'New',
+    description: 'Brand new sealed pack, webOS, HDR support',
+    seller: 'Electronics Hub',
+    postedDate: '8 hours ago',
+  ),
+  Product(
+    id: '12',
+    title: 'Study Table with Chair',
+    price: 8500,
+    location: 'Ganga Nagar, Meerut',
+    distance: 2.1,
+    latitude: 28.9934,
+    longitude: 77.7234,
+    image: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=400',
+    category: 'Furniture',
+    condition: 'Good',
+    description: 'Wooden study table with comfortable chair, good for students',
+    seller: 'Priya Sharma',
+    postedDate: '3 days ago',
+  ),
+  Product(
+    id: '13',
+    title: 'Canon EOS 1500D DSLR',
+    price: 28000,
+    location: 'Hapur Road, Meerut',
+    distance: 3.8,
+    latitude: 28.9567,
+    longitude: 77.7345,
+    image: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400',
+    images: [
+      'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400',
+      'https://images.unsplash.com/photo-1606913084603-3e7702b01627?w=400',
+    ],
+    category: 'Electronics',
+    condition: 'Like New',
+    description: '24MP, with 18-55mm lens, bag and accessories included',
+    seller: 'Photography Store',
+    postedDate: '12 hours ago',
+  ),
+  Product(
+    id: '14',
+    title: 'Mountain Bike - Firefox',
+    price: 15000,
+    location: 'Lalkurti, Meerut',
+    distance: 1.5,
+    latitude: 28.9789,
+    longitude: 77.7089,
+    image: 'https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=400',
+    category: 'Sports',
+    condition: 'Good',
+    description: '21 speed gears, front suspension, rarely used',
+    seller: 'Rohit Joshi',
+    postedDate: '2 days ago',
+  ),
+  Product(
+    id: '15',
+    title: '2BHK Flat for Rent',
+    price: 12000,
+    location: 'Shastri Nagar, Meerut',
+    distance: 1.1,
+    latitude: 28.9856,
+    longitude: 77.7078,
+    image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400',
+    category: 'Property',
+    condition: 'Good',
+    description: 'Spacious 2BHK, semi-furnished, family preferred',
+    seller: 'Property Dealer',
+    postedDate: '1 week ago',
+  ),
 ];
 
-// Home Page with Location
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  String selectedCategory = 'All';
-  double distanceRange = 10;
-  final List<String> categories = [
-    'All',
-    'Electronics',
-    'Vehicles',
-    'Property',
-    'Furniture',
-    'Sports'
-  ];
-
-  String _currentLocation = 'Getting location...';
-  double? _userLatitude;
-  double? _userLongitude;
-  bool _isLoadingLocation = true;
-  final LocationService _locationService = LocationService();
-
-  @override
-  void initState() {
-    super.initState();
-    _loadLocation();
-  }
-
-  Future<void> _loadLocation() async {
-    setState(() {
-      _isLoadingLocation = true;
-    });
-
-    // Try to get saved location first
-    Map<String, dynamic>? savedLocation =
-    await _locationService.getSavedLocation();
-
-    if (savedLocation != null) {
-      setState(() {
-        _currentLocation = savedLocation['fullAddress'] ?? 'Unknown Location';
-        _userLatitude = savedLocation['latitude'];
-        _userLongitude = savedLocation['longitude'];
-        _isLoadingLocation = false;
-      });
-    } else {
-      // No saved location, fetch new one
-      await _fetchNewLocation();
-    }
-  }
-
-  Future<void> _fetchNewLocation() async {
-    setState(() {
-      _isLoadingLocation = true;
-    });
-
-    Map<String, dynamic>? location =
-    await _locationService.fetchAndSaveLocation();
-
-    if (location != null) {
-      setState(() {
-        _currentLocation = location['fullAddress'] ?? 'Unknown Location';
-        _userLatitude = location['latitude'];
-        _userLongitude = location['longitude'];
-        _isLoadingLocation = false;
-      });
-    } else {
-      setState(() {
-        _currentLocation = 'Location unavailable';
-        _isLoadingLocation = false;
-      });
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Unable to get location. Please enable location services.'),
-            action: SnackBarAction(
-              label: 'Settings',
-              onPressed: () => LocationService().openAppSettings(),
-            ),
-          ),
-        );
-      }
-    }
-  }
-
-  List<Product> _getFilteredProducts() {
-    return mockProducts.where((product) {
-      final categoryMatch =
-          selectedCategory == 'All' || product.category == selectedCategory;
-
-      // Calculate real distance if user location is available
-      double distance = product.distance;
-      if (_userLatitude != null && _userLongitude != null) {
-        distance = _locationService.calculateDistance(
-          _userLatitude!,
-          _userLongitude!,
-          product.latitude,
-          product.longitude,
-        );
-      }
-
-      final distanceMatch = distance <= distanceRange;
-      return categoryMatch && distanceMatch;
-    }).toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final filteredProducts = _getFilteredProducts();
-
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
-              ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFF2563EB),
-                                    Color(0xFF9333EA),
-                                    Color(0xFFEC4899),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  'N',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ShaderMask(
-                                  shaderCallback: (bounds) =>
-                                      const LinearGradient(
-                                        colors: [
-                                          Color(0xFF2563EB),
-                                          Color(0xFF9333EA),
-                                          Color(0xFFEC4899),
-                                        ],
-                                      ).createShader(bounds),
-                                  child: const Text(
-                                    'NearByt',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w900,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  'BUY LOCAL',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.grey[600],
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 1.2,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.tune),
-                          onPressed: () {
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (context) => StatefulBuilder(
-                                builder: (context, setModalState) => Container(
-                                  padding: const EdgeInsets.all(24),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Filter Products',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 24),
-                                      Text(
-                                        'Distance Range: ${distanceRange.toInt()} km',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      Slider(
-                                        value: distanceRange,
-                                        min: 1,
-                                        max: 20,
-                                        divisions: 19,
-                                        onChanged: (value) {
-                                          setModalState(() {
-                                            distanceRange = value;
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ).then((_) {
-                              setState(() {});
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Location Display with Refresh
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        Icon(Icons.location_on,
-                            color: Colors.grey[600], size: 20),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _isLoadingLocation
-                              ? Row(
-                            children: [
-                              SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor:
-                                  AlwaysStoppedAnimation<Color>(
-                                      Colors.grey[600]!),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                _currentLocation,
-                                style: TextStyle(color: Colors.grey[600]),
-                              ),
-                            ],
-                          )
-                              : Text(
-                            _currentLocation,
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.refresh, color: Colors.blue[700]),
-                          onPressed: _fetchNewLocation,
-                          tooltip: 'Refresh location',
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: 40,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: categories.length,
-                      separatorBuilder: (context, index) =>
-                      const SizedBox(width: 8),
-                      itemBuilder: (context, index) {
-                        final category = categories[index];
-                        final isSelected = selectedCategory == category;
-                        return ChoiceChip(
-                          label: Text(category),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setState(() {
-                              selectedCategory = category;
-                            });
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              ),
-            ),
-            // Products Grid
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Showing ${filteredProducts.length} products within ${distanceRange.toInt()} km',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                    const SizedBox(height: 16),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.75,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                      ),
-                      itemCount: filteredProducts.length,
-                      itemBuilder: (context, index) {
-                        return ProductCard(product: filteredProducts[index]);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Product Card Widget (unchanged)
+// Product Card Widget (Reusable)
 class ProductCard extends StatelessWidget {
   final Product product;
 
@@ -684,9 +511,6 @@ class ProductCard extends StatelessWidget {
     );
   }
 }
-
-// Remaining classes remain the same (ProductDetailPage, SearchPage, AddProductPage, NotificationsPage, AccountPage)
-// ... (include all other classes from your original file unchanged)
 
 // Product Detail Page
 class ProductDetailPage extends StatefulWidget {
@@ -1004,1094 +828,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// Search Page
-class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
-
-  @override
-  State<SearchPage> createState() => _SearchPageState();
-}
-
-class _SearchPageState extends State<SearchPage> {
-  String searchQuery = '';
-  String selectedCategory = 'All';
-  final List<String> categories = [
-    'All',
-    'Electronics',
-    'Vehicles',
-    'Property',
-    'Furniture',
-    'Sports'
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final filteredProducts = mockProducts.where((product) {
-      final matchesSearch = product.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          product.description.toLowerCase().contains(searchQuery.toLowerCase());
-      final matchesCategory =
-          selectedCategory == 'All' || product.category == selectedCategory;
-      return matchesSearch && matchesCategory;
-    }).toList();
-
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Search Products',
-          style: TextStyle(color: Colors.black),
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(120),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      searchQuery = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Search for products, brands and more...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 50,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: categories.length,
-                  separatorBuilder: (context, index) => const SizedBox(width: 8),
-                  itemBuilder: (context, index) {
-                    final category = categories[index];
-                    return ChoiceChip(
-                      label: Text(category),
-                      selected: selectedCategory == category,
-                      onSelected: (selected) {
-                        setState(() {
-                          selectedCategory = category;
-                        });
-                      },
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (searchQuery.isNotEmpty)
-              Text(
-                'Found ${filteredProducts.length} results for "$searchQuery"',
-                style: TextStyle(color: Colors.grey[600]),
-              )
-            else
-              Text(
-                'Start typing to search for products',
-                style: TextStyle(color: Colors.grey[500]),
-              ),
-            const SizedBox(height: 16),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-              ),
-              itemCount: filteredProducts.length,
-              itemBuilder: (context, index) {
-                return ProductCard(product: filteredProducts[index]);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Add Product Page
-class AddProductPage extends StatefulWidget {
-  const AddProductPage({super.key});
-
-  @override
-  State<AddProductPage> createState() => _AddProductPageState();
-}
-
-class _AddProductPageState extends State<AddProductPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _priceController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _locationController = TextEditingController();
-  String? selectedCategory;
-  String? selectedCondition;
-  List<String> images = [];
-
-  final List<String> categories = [
-    'Electronics',
-    'Vehicles',
-    'Property',
-    'Furniture',
-    'Sports',
-    'Fashion',
-    'Books',
-    'Other'
-  ];
-
-  final List<String> conditions = ['New', 'Like New', 'Good', 'Fair', 'Used'];
-
-  void _addImage() {
-    if (images.length < 5) {
-      setState(() {
-        final mockImages = [
-          'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
-          'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
-          'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400',
-        ];
-        images.add(mockImages[images.length % mockImages.length]);
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Image added')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Maximum 5 images allowed')),
-      );
-    }
-  }
-
-  void _removeImage(int index) {
-    setState(() {
-      images.removeAt(index);
-    });
-  }
-
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      if (images.length < 3) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please add at least 3 images')),
-        );
-        return;
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Product listed successfully!')),
-      );
-
-      _formKey.currentState!.reset();
-      _titleController.clear();
-      _priceController.clear();
-      _descriptionController.clear();
-      _locationController.clear();
-      setState(() {
-        selectedCategory = null;
-        selectedCondition = null;
-        images = [];
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Add Product to Sell',
-          style: TextStyle(color: Colors.black),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Product Images * (Min: 3, Max: 5)',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 16),
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                        ),
-                        itemCount: images.length + (images.length < 5 ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index == images.length) {
-                            return GestureDetector(
-                              onTap: _addImage,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.grey[300]!,
-                                    width: 2,
-                                    style: BorderStyle.solid,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Center(
-                                  child: Icon(Icons.add_photo_alternate, size: 40),
-                                ),
-                              ),
-                            );
-                          }
-                          return Stack(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  image: DecorationImage(
-                                    image: NetworkImage(images[index]),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                top: 4,
-                                right: 4,
-                                child: GestureDetector(
-                                  onTap: () => _removeImage(index),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                      size: 16,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        images.length < 3
-                            ? 'Please add ${3 - images.length} more image(s)'
-                            : '${images.length} of 5 images added',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: images.length < 3 ? Colors.red : Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        controller: _titleController,
-                        decoration: const InputDecoration(
-                          labelText: 'Product Title *',
-                          hintText: 'e.g. iPhone 13 Pro Max',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a title';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _priceController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Price (₹) *',
-                          hintText: 'e.g. 45000',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a price';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        value: selectedCategory,
-                        decoration: const InputDecoration(
-                          labelText: 'Category *',
-                          border: OutlineInputBorder(),
-                        ),
-                        items: categories.map((category) {
-                          return DropdownMenuItem(
-                            value: category,
-                            child: Text(category),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedCategory = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Please select a category';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        value: selectedCondition,
-                        decoration: const InputDecoration(
-                          labelText: 'Condition *',
-                          border: OutlineInputBorder(),
-                        ),
-                        items: conditions.map((condition) {
-                          return DropdownMenuItem(
-                            value: condition,
-                            child: Text(condition),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedCondition = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Please select a condition';
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: TextFormField(
-                    controller: _descriptionController,
-                    maxLines: 5,
-                    decoration: const InputDecoration(
-                      labelText: 'Description *',
-                      hintText: 'Describe your product in detail...',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a description';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: TextFormField(
-                    controller: _locationController,
-                    decoration: const InputDecoration(
-                      labelText: 'Location *',
-                      hintText: 'e.g. Mumbai, Maharashtra',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a location';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text(
-                    'Post Advertisement',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _priceController.dispose();
-    _descriptionController.dispose();
-    _locationController.dispose();
-    super.dispose();
-  }
-}
-
-// Notifications Page
-class NotificationsPage extends StatelessWidget {
-  const NotificationsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final notifications = [
-      {
-        'type': 'message',
-        'title': 'New Message',
-        'message': 'Rahul Kumar sent you a message about "iPhone 13 Pro Max"',
-        'time': '5 minutes ago',
-        'read': false,
-      },
-      {
-        'type': 'like',
-        'title': 'Someone liked your product',
-        'message': 'Your "Dell XPS 15 Laptop" was added to favorites',
-        'time': '1 hour ago',
-        'read': false,
-      },
-      {
-        'type': 'price_drop',
-        'title': 'Price Drop Alert',
-        'message': 'Sony PlayStation 5 is now ₹2,000 cheaper in your area',
-        'time': '3 hours ago',
-        'read': true,
-      },
-      {
-        'type': 'sold',
-        'title': 'Product Sold',
-        'message': 'Congratulations! Your "Mountain Bike" has been sold',
-        'time': '1 day ago',
-        'read': true,
-      },
-    ];
-
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Notifications',
-          style: TextStyle(color: Colors.black),
-        ),
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          final notification = notifications[index];
-          final isRead = notification['read'] as bool;
-
-          IconData icon;
-          Color iconColor;
-
-          switch (notification['type']) {
-            case 'message':
-              icon = Icons.message;
-              iconColor = Colors.blue;
-              break;
-            case 'like':
-              icon = Icons.favorite;
-              iconColor = Colors.red;
-              break;
-            case 'price_drop':
-              icon = Icons.trending_down;
-              iconColor = Colors.green;
-              break;
-            case 'sold':
-              icon = Icons.shopping_bag;
-              iconColor = Colors.purple;
-              break;
-            default:
-              icon = Icons.notifications;
-              iconColor = Colors.grey;
-          }
-
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            color: isRead ? Colors.white : Colors.blue[50],
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(icon, color: iconColor),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                notification['title'] as String,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            if (!isRead)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Text(
-                                  'New',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          notification['message'] as String,
-                          style: TextStyle(color: Colors.grey[700]),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          notification['time'] as String,
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-// Account Page (Fixed to include full menu navigation and dynamic counts)
-class AccountPage extends StatefulWidget {
-  const AccountPage({super.key});
-
-  @override
-  State<AccountPage> createState() => _AccountPageState();
-}
-
-class _AccountPageState extends State<AccountPage> {
-  String _fullName = 'Arun Sharma';
-  String _email = 'arunsharma73177@gmail.co';
-  String _memberSince = 'Member since Jan 2024';
-  String _profileImage = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200';
-
-  // Mock data for active listings (matches the two items shown in the screenshot)
-  final List<Map<String, Object>> userProducts = [
-    {
-      'title': 'Dell XPS 15 Laptop',
-      'price': 85000,
-      'status': 'Active',
-      'views': 234,
-      'image':
-      'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=200',
-    },
-    {
-      'title': 'Mountain Bike - Firefox',
-      'price': 15000,
-      'status': 'Sold',
-      'views': 456,
-      'image':
-      'https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=200',
-    },
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserData();
-  }
-
-  Future<void> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      // Use full name saved from login/signup, falling back to mock
-      _fullName = prefs.getString('fullName') ?? 'Arun Sharma';
-      _email = prefs.getString('username') != null
-          ? '${prefs.getString('username')}@temp.com'
-          : 'arunsharma73177@gmail.com';
-      _profileImage = prefs.getString('profileImage') ??
-          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200';
-    });
-  }
-
-  Future<void> _handleLogout(BuildContext context) async {
-    final shouldLogout = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Logout'),
-          ),
-        ],
-      ),
-    );
-
-    if (shouldLogout == true) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoggedIn', false);
-      await prefs.remove('username');
-      await prefs.remove('fullName');
-
-      if (!context.mounted) return;
-
-      // Navigate to a login screen
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        '/login',
-            (route) => false,
-      );
-    }
-  }
-
-  // Function to build a reusable menu item with navigation
-  Widget _buildMenuItem(IconData icon, String label, String? count,
-      VoidCallback? onTap) {
-    return ListTile(
-      onTap: onTap,
-      leading: Icon(icon, color: Colors.grey[600]),
-      title: Text(label),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (count != null)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(count),
-            ),
-          const SizedBox(width: 8),
-          const Icon(Icons.chevron_right, color: Colors.grey),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // 🛠️ Dynamic Count Calculation: Creating instances to access public lists
-
-    // FIXING 'Instance member userListings can't be accessed using static access'
-    // Since it's defined as a NON-STATIC getter in my_listings.dart, we must create an instance.
-    final listingsInstance = listings_page.MyListingsPage();
-    final totalListingsCount = listingsInstance.userListings.length;
-
-    final activeListingsCount = userProducts.where((p) => p['status'] == 'Active').length;
-    final soldListingsCount = userProducts.where((p) => p['status'] == 'Sold').length;
-
-    // Assuming FavoritesPage.favoriteProductIds is STATIC (Standard practice for a mock ID list)
-    final favoritesCount = favorites_page.FavoritesPage.favoriteProductIds.length;
-
-    // FIX: Using static access, confirmed correct structure by provided reviews.dart code
-    final reviewsCount = reviews_page.ReviewsPage.dummyReviews.length;
-
-
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'My Account',
-          style: TextStyle(color: Colors.black),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        // Profile Image
-                        CircleAvatar(
-                          radius: 40,
-                          backgroundColor: Colors.blue[800],
-                          backgroundImage: NetworkImage(_profileImage),
-                          onBackgroundImageError: (exception, stackTrace) {
-                            if (mounted) {
-                              setState(() {
-                                _profileImage = '';
-                              });
-                            }
-                          },
-                          child: _profileImage.isEmpty
-                              ? Text(
-                            _fullName.isNotEmpty
-                                ? _fullName[0].toUpperCase()
-                                : 'A',
-                            style: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          )
-                              : null,
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _fullName,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                _email,
-                                style: TextStyle(color: Colors.grey[600]),
-                              ),
-                              Text(
-                                _memberSince,
-                                style: TextStyle(
-                                  color: Colors.grey[500],
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        OutlinedButton(
-                          onPressed: () async {
-                            final result = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                // Assuming EditProfilePage is globally available via main.dart
-                                builder: (context) => const EditProfilePage(),
-                              ),
-                            );
-                            if (result == true && mounted) {
-                              _loadUserData();
-                            }
-                          },
-                          child: const Text('Edit'),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 32),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Column(
-                          children: [
-                            Text(
-                              'Listings',
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
-                            Text(
-                              activeListingsCount.toString(), // 🛠️ Dynamic
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text(
-                              'Sold',
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
-                            Text(
-                              soldListingsCount.toString(), // 🛠️ Dynamic
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text(
-                              'Rating',
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
-                            const Text(
-                              '4.5 ⭐',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Menu Items Section (WITH DYNAMIC COUNTS)
-            Card(
-              child: Column(
-                children: [
-                  _buildMenuItem(
-                      Icons.shopping_bag,
-                      'My Listings',
-                      totalListingsCount.toString(), // 🛠️ Total Count
-                          () {
-                        // Navigate to MyListingsPage (using imported class)
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const listings_page.MyListingsPage()));
-                      }),
-                  _buildMenuItem(
-                      Icons.favorite,
-                      'Favorites',
-                      favoritesCount.toString(), // 🛠️ Total Count
-                          () {
-                        // Navigate to FavoritesPage (using imported class)
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const favorites_page.FavoritesPage()));
-                      }),
-                  _buildMenuItem(
-                      Icons.star,
-                      'Reviews',
-                      reviewsCount.toString(), // 🛠️ Total Count
-                          () {
-                        // Navigate to ReviewsPage (using imported class)
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const reviews_page.ReviewsPage()));
-                      }),
-                  _buildMenuItem(Icons.settings, 'Settings', null, () {
-                    // Navigate to SettingsPage (using imported class)
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SettingsPage()));
-                  }),
-                  _buildMenuItem(Icons.help, 'Help & Support', null, () {
-                    // Navigate to HelpAndSupportPage (using imported class)
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HelpAndSupportPage()));
-                  }),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'My Active Listings',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            // Active Listings List (Uses the fixed two products from userProducts)
-            ...userProducts.map((product) {
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          product['image'] as String,
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              width: 80,
-                              height: 80,
-                              color: Colors.grey[200],
-                              child: const Icon(Icons.image),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    product['title'] as String,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: product['status'] == 'Active'
-                                        ? Colors.blue
-                                        : Colors.grey,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    product['status'] as String,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '₹ ${(product['price'] as int).toStringAsFixed(0)}',
-                              style: const TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${product['views']} views',
-                              style: TextStyle(
-                                color: Colors.grey[500],
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
-            const SizedBox(height: 16),
-            // LOGOUT BUTTON
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () => _handleLogout(context),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: const BorderSide(color: Colors.red),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.logout, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text(
-                      'Logout',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
