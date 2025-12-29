@@ -16,6 +16,8 @@ import 'pages_under_settings/reviews.dart';
 import 'pages_under_settings/settings.dart';
 import 'pages_under_settings/help_and_support.dart';
 
+// Import edit profile
+import 'edit_profile.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,6 +60,9 @@ class MyApp extends StatelessWidget {
         }
         if (settings.name == '/help_support') {
           return MaterialPageRoute(builder: (context) => const HelpAndSupportPage());
+        }
+        if (settings.name == '/edit_profile') {
+          return MaterialPageRoute(builder: (context) => const EditProfilePage());
         }
         return null;
       },
@@ -150,37 +155,6 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 24),
             const CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2563EB)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// --- Placeholder for 'edit_profile.dart' (Used by AccountPage) ---
-class EditProfilePage extends StatelessWidget {
-  const EditProfilePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Edit Profile Form will be here.'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Mock profile update success
-                // Pop with true to signal a potential update to AccountPage
-                Navigator.pop(context, true);
-              },
-              child: const Text('Save Profile (Mock)'),
             ),
           ],
         ),
