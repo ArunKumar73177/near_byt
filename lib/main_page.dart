@@ -1,15 +1,11 @@
-// lib/main_page.dart
 
 import 'package:flutter/material.dart';
-
-// Import the new separate page files
 import 'home_page.dart';
 import 'search.dart';
 import 'sell.dart';
 import 'alerts.dart';
 import 'account.dart';
 
-// Main Page with Bottom Navigation
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -73,8 +69,6 @@ class _MainPageState extends State<MainPage> {
     );
   }
 }
-
-// Product Model
 class Product {
   final String id;
   final String title;
@@ -109,9 +103,7 @@ class Product {
   });
 }
 
-// Mock Data with more products near Meerut (28.9845, 77.7064)
 final List<Product> mockProducts = [
-  // Original products
   Product(
     id: '1',
     title: 'iPhone 13 Pro Max',
@@ -182,7 +174,6 @@ final List<Product> mockProducts = [
     postedDate: '4 hours ago',
   ),
 
-  // New products near Meerut
   Product(
     id: '5',
     title: 'Samsung Galaxy S23 Ultra',
@@ -283,7 +274,7 @@ final List<Product> mockProducts = [
     condition: 'Used',
     description: '2021 model, 18000 km driven, excellent condition',
     seller: 'Amit Kumar',
-    postedDate: '1 day ago',
+    postedDate: '8 day ago',
   ),
   Product(
     id: '11',
