@@ -102,7 +102,7 @@ class Product {
     required this.longitude,
   });
 }
-
+// Demo Products
 final List<Product> mockProducts = [
   Product(
     id: '1',
