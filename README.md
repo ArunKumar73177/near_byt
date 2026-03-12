@@ -20,8 +20,6 @@ Tech Used
 
 Flutter (Dart)
 
-Firebase / Supabase (backend & storage)
-
 Google Maps API / Geolocator (location services)
 
 Getting Started
