@@ -33,13 +33,10 @@ Email :- arunsharma73177@gmail.com
 
 Install dependencies:
 
-
 flutter clean
 flutter pub get
 
-
 Run the app:
-
 flutter run
 
 About
