@@ -1,38 +1,33 @@
-name: near_byt
-description: "A new Flutter project."
-publish_to: 'none'
+  name: near_byt
+  description: "A new Flutter project."
+  publish_to: 'none'
 
-version: 1.0.0+1
+  version: 1.0.0+1
 
-environment:
-  sdk: ^3.9.2
+  environment:
+    sdk: ^3.5.0
 
-dependencies:
+  dependencies:
+    flutter:
+      sdk: flutter
+    cupertino_icons: ^1.0.8
+    shared_preferences: ^2.2.2
+    geolocator: ^10.1.0
+    geocoding: ^2.1.1
+    permission_handler: ^11.0.1
+    image_picker: ^1.0.7
+    dio: ^5.4.0
+
+  dev_dependencies:
+    flutter_test:
+      sdk: flutter
+    flutter_lints: ^5.0.0
+
   flutter:
-    sdk: flutter
-
-  shared_preferences: ^2.2.2
-  cupertino_icons: ^1.0.8
-
-  # Location packages
-  geolocator: ^10.1.0
-  geocoding: ^2.1.1
-  permission_handler: ^11.0.1
-  image_picker: ^1.0.7
-  dio: ^5.4.0cCmain
-
-dev_dependencies:
-  flutter_launcher_icons: "^0.13.1"
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^5.0.0
-
-flutter:
-  uses-material-design: true
-  assets:
-    - assets/icon/
-
-flutter_icons:
-  android: true
-  ios: true
-  image_path: "assets/icon/app_icon.png"
+    uses-material-design: true
+    assets:
+      - assets/icon/
+  flutter_icons:
+    android: true
+    ios: true
+    image_path: "assets/icon/app_icon.png"

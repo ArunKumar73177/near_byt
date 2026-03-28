@@ -3,20 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Import the main application structure
 import 'main_page.dart';
-
-// Import the actual login screen implementation
 import 'login_page.dart';
-
-// Import the required page classes from pages_under_settings
 import 'pages_under_settings/my_listings.dart';
 import 'pages_under_settings/favorites.dart';
 import 'pages_under_settings/reviews.dart';
 import 'pages_under_settings/settings.dart';
 import 'pages_under_settings/help_and_support.dart';
-
-// Import edit profile
 import 'edit_profile.dart';
 
 void main() {
@@ -40,7 +33,8 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
         scaffoldBackgroundColor: const Color(0xFFF8F9FC),
-        cardTheme: CardTheme(
+        // ✅ FIXED: CardTheme → CardThemeData
+        cardTheme: CardThemeData(
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -53,40 +47,34 @@ class MyApp extends StatelessWidget {
           foregroundColor: Color(0xFF1E293B),
         ),
       ),
-      // Use SplashScreen to check login status
       home: const SplashScreen(),
       routes: {
-        // Now correctly points to the implementation from login_page.dart
         '/login': (context) => const LoginScreen(),
-        '/main': (context) => const MainPage(),
+        '/main':  (context) => const MainPage(),
       },
-      // Register all the external pages
       onGenerateRoute: (settings) {
-        if (settings.name == '/my_listings') {
-          return MaterialPageRoute(builder: (context) => const MyListingsPage());
+        switch (settings.name) {
+          case '/my_listings':
+            return MaterialPageRoute(builder: (_) => const MyListingsPage());
+          case '/favorites':
+            return MaterialPageRoute(builder: (_) => const FavoritesPage());
+          case '/reviews':
+            return MaterialPageRoute(builder: (_) => const ReviewsPage());
+          case '/settings':
+            return MaterialPageRoute(builder: (_) => const SettingsPage());
+          case '/help_support':
+            return MaterialPageRoute(builder: (_) => const HelpAndSupportPage());
+          case '/edit_profile':
+            return MaterialPageRoute(builder: (_) => const EditProfilePage());
+          default:
+            return null;
         }
-        if (settings.name == '/favorites') {
-          return MaterialPageRoute(builder: (context) => const FavoritesPage());
-        }
-        if (settings.name == '/reviews') {
-          return MaterialPageRoute(builder: (context) => const ReviewsPage());
-        }
-        if (settings.name == '/settings') {
-          return MaterialPageRoute(builder: (context) => const SettingsPage());
-        }
-        if (settings.name == '/help_support') {
-          return MaterialPageRoute(builder: (context) => const HelpAndSupportPage());
-        }
-        if (settings.name == '/edit_profile') {
-          return MaterialPageRoute(builder: (context) => const EditProfilePage());
-        }
-        return null;
       },
     );
   }
 }
 
-// Splash Screen to check login status
+// ─── Splash Screen ────────────────────────────────────────────────────────────
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -94,33 +82,27 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _fadeAnimation;
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
+  late final Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
 
-    // Initialize animations
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
     _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeOutBack,
-      ),
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeIn,
-      ),
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
 
     _controller.forward();
@@ -134,21 +116,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> _checkLoginStatus() async {
-    // Add a delay for splash effect and animation
     await Future.delayed(const Duration(milliseconds: 2000));
+    if (!mounted) return;
 
     final prefs = await SharedPreferences.getInstance();
     final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
     if (!mounted) return;
-
-    if (isLoggedIn) {
-      // User is logged in, navigate to main page
-      Navigator.of(context).pushReplacementNamed('/main');
-    } else {
-      // User is not logged in, navigate to login page
-      Navigator.of(context).pushReplacementNamed('/login');
-    }
+    Navigator.of(context).pushReplacementNamed(isLoggedIn ? '/main' : '/login');
   }
 
   @override
@@ -169,7 +144,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         child: Center(
           child: AnimatedBuilder(
             animation: _controller,
-            builder: (context, child) {
+            builder: (context, _) {
               return FadeTransition(
                 opacity: _fadeAnimation,
                 child: ScaleTransition(
@@ -177,7 +152,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Logo container with shadow
+                      // Logo
                       Container(
                         width: 100,
                         height: 100,
@@ -213,7 +188,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                         ),
                       ),
                       const SizedBox(height: 24),
-                      // App name with gradient
+                      // App name
                       ShaderMask(
                         shaderCallback: (bounds) => const LinearGradient(
                           colors: [
@@ -233,7 +208,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                         ),
                       ),
                       const SizedBox(height: 8),
-                      // Tagline
                       Text(
                         'Discover nearby treasures',
                         style: TextStyle(
@@ -244,7 +218,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                         ),
                       ),
                       const SizedBox(height: 40),
-                      // Loading indicator
                       SizedBox(
                         width: 40,
                         height: 40,
