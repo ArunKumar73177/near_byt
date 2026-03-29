@@ -38,6 +38,5 @@ flutter pub get
 Run the app:
 flutter run
 
-About
-
+About:-
 near_byt is built to make buying and selling within your local area fast and easy. No long deliveries, no far-away sellers — everything happens nearby.
