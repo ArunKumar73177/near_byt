@@ -52,7 +52,6 @@ class _HomePageState extends State<HomePage> {
         _isLoadingLocation = false;
       });
     } else {
-      // No saved location, fetch new one
       await _fetchNewLocation();
     }
   }
@@ -97,7 +96,6 @@ class _HomePageState extends State<HomePage> {
       final categoryMatch =
           selectedCategory == 'All' || product.category == selectedCategory;
 
-      // Calculate real distance if user location is available
       double distance = product.distance;
       if (_userLatitude != null && _userLongitude != null) {
         distance = _locationService.calculateDistance(
@@ -246,7 +244,6 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
-                  // Location Display with Refresh
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
@@ -316,7 +313,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            // Products Grid
+
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
