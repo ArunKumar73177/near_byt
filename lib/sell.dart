@@ -1,5 +1,3 @@
-// lib/sell.dart
-
 import 'package:flutter/material.dart';
 
 class SellPage extends StatefulWidget {
