@@ -1,9 +1,6 @@
-// lib/account.dart
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Import pages from the settings subdirectory
 import 'pages_under_settings/my_listings.dart' as listings_page;
 import 'pages_under_settings/favorites.dart' as favorites_page;
 import 'pages_under_settings/reviews.dart' as reviews_page;
@@ -24,7 +21,6 @@ class _AccountPageState extends State<AccountPage> {
   String _memberSince = 'Member since Jan 2024';
   String _profileImage = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200';
 
-  // Mock data for active listings
   final List<Map<String, Object>> userProducts = [
     {
       'title': 'Dell XPS 15 Laptop',
