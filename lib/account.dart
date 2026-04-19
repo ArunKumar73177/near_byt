@@ -17,7 +17,7 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   String _fullName = 'Arun Sharma';
-  String _email = 'arunsharma73177@gmail.com';
+  String _email = 'arunsharma@gmail.com';
   String _memberSince = 'Member since Jan 2024';
   String _profileImage = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200';
 
@@ -34,7 +34,7 @@ class _AccountPageState extends State<AccountPage> {
       'title': 'Mountain Bike - Firefox',
       'price': 15000,
       'status': 'Sold',
-      'views': 456,
+      'views': 45,
       'image':
       'https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=200',
     },
