@@ -222,7 +222,6 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                           const SizedBox(height: 20),
 
-                          // Tabs
                           Container(
                             decoration: BoxDecoration(
                               color: const Color(0xFFF5F5F5),
@@ -292,7 +291,6 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                           const SizedBox(height: 20),
 
-                          // Tab Content - Using IndexedStack instead of TabBarView
                           IndexedStack(
                             index: _tabController.index,
                             children: [
@@ -301,7 +299,6 @@ class _LoginScreenState extends State<LoginScreen>
                             ],
                           ),
 
-                          // Divider
                           const Divider(height: 32, color: Color(0xFFE5E5E5)),
 
                           // Features
