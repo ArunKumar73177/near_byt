@@ -301,7 +301,6 @@ class _LoginScreenState extends State<LoginScreen>
 
                           const Divider(height: 32, color: Color(0xFFE5E5E5)),
 
-                          // Features
                           Row(
                             children: [
                               Expanded(
