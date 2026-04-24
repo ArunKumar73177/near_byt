@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
-  static const String baseUrl = "http://YOUR_BACKEND_IP:8080/api";
+  static const String baseUrl = "http://localhost:8080/api";
   // For Android emulator use: http://10.0.2.2:8080/api
   // For physical device use your machine's local IP: http://192.168.x.x:8080/api
   // For production: https://your-domain.com/api

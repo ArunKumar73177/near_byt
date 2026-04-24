@@ -1,23 +1,17 @@
 // lib/services/location_service.dart
 
 import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../config/secrets.dart';
 
-/// Service class to handle all location-related operations
-/// Singleton pattern ensures only one instance exists throughout the app
 class LocationService {
-  // Singleton instance
   static final LocationService _instance = LocationService._internal();
-
-  // Factory constructor returns the same instance
   factory LocationService() => _instance;
-
-  // Private constructor
   LocationService._internal();
 
-  // SharedPreferences keys for storing location data
+  static const String _googleApiKey = googleMapsApiKey;
+
   static const String _keyLatitude = 'user_latitude';
   static const String _keyLongitude = 'user_longitude';
   static const String _keyCity = 'user_city';
@@ -25,152 +19,109 @@ class LocationService {
   static const String _keyCountry = 'user_country';
   static const String _keyFullAddress = 'user_full_address';
 
-  /// Request location permission from the user
-  /// Returns true if permission is granted, false otherwise
-  Future<bool> requestLocationPermission() async {
-    try {
-      final status = await Permission.location.request();
-      return status.isGranted;
-    } catch (e) {
-      print('Error requesting location permission: $e');
-      return false;
-    }
-  }
-
-  /// Check if location permission is already granted
-  /// Returns true if permission is granted, false otherwise
-  Future<bool> hasLocationPermission() async {
-    try {
-      final status = await Permission.location.status;
-      return status.isGranted;
-    } catch (e) {
-      print('Error checking location permission: $e');
-      return false;
-    }
-  }
-
-  /// Get the user's current GPS location
-  /// Returns Position object with latitude, longitude, and other data
-  /// Returns null if location cannot be obtained
   Future<Position?> getCurrentLocation() async {
     try {
-      // Step 1: Check if location services are enabled on the device
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        print('Location services are disabled');
-        throw Exception('Location services are disabled. Please enable location in settings.');
+        throw Exception('Location services are disabled.');
       }
 
-      // Step 2: Check current permission status
       LocationPermission permission = await Geolocator.checkPermission();
-
-      // Step 3: Request permission if denied
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          print('Location permission denied by user');
-          throw Exception('Location permission denied. Please grant location access.');
+          throw Exception('Location permission denied.');
         }
       }
-
-      // Step 4: Handle permanently denied permissions
       if (permission == LocationPermission.deniedForever) {
-        print('Location permissions are permanently denied');
-        throw Exception('Location permissions are permanently denied. Please enable in app settings.');
+        throw Exception('Location permissions permanently denied.');
       }
 
-      // Step 5: Get current position with high accuracy
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 10), // Timeout after 10 seconds
+        timeLimit: const Duration(seconds: 10),
       );
 
       print('Location obtained: ${position.latitude}, ${position.longitude}');
       return position;
-
     } catch (e) {
       print('Error getting current location: $e');
       return null;
     }
   }
 
-  /// Convert GPS coordinates to a human-readable address
-  /// Returns a map containing city, state, country, and full address
-  /// Returns null if conversion fails
+  /// Uses Google Maps Geocoding API — works on Web, Android, iOS
   Future<Map<String, String>?> getAddressFromCoordinates(
-      double latitude,
-      double longitude) async {
+      double latitude, double longitude) async {
     try {
-      // Use geocoding to get address from coordinates
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        latitude,
-        longitude,
-      );
+      final url =
+          'https://maps.googleapis.com/maps/api/geocode/json'
+          '?latlng=$latitude,$longitude&key=$_googleApiKey';
 
-      if (placemarks.isNotEmpty) {
-        Placemark place = placemarks[0];
+      final response = await Dio().get(url);
 
-        // Extract address components
-        String city = place.locality ??
-            place.subAdministrativeArea ??
-            place.administrativeArea ??
-            'Unknown City';
+      if (response.data['status'] == 'OK') {
+        final results = response.data['results'] as List;
+        if (results.isEmpty) return null;
 
-        String state = place.administrativeArea ?? 'Unknown State';
-        String country = place.country ?? 'Unknown Country';
+        // Extract address components from first result
+        final components =
+        results[0]['address_components'] as List;
 
-        // Create full address string
-        String fullAddress = '';
-        if (place.locality != null && place.locality!.isNotEmpty) {
-          fullAddress = place.locality!;
-        }
-        if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
-          if (fullAddress.isNotEmpty) {
-            fullAddress += ', ${place.administrativeArea!}';
-          } else {
-            fullAddress = place.administrativeArea!;
+        String city = '';
+        String state = '';
+        String country = '';
+
+        for (final component in components) {
+          final types = List<String>.from(component['types']);
+          if (types.contains('locality')) {
+            city = component['long_name'];
+          } else if (types.contains('administrative_area_level_1')) {
+            state = component['long_name'];
+          } else if (types.contains('country')) {
+            country = component['long_name'];
           }
         }
 
-        // Fallback to Unknown Location if empty
-        if (fullAddress.isEmpty) {
-          fullAddress = 'Unknown Location';
-        }
+        // Use formatted_address as full address
+        final fullAddress = results[0]['formatted_address'] as String? ?? '';
 
-        print('Address obtained: $fullAddress');
+        // Build a shorter display address (city, state)
+        String displayAddress = '';
+        if (city.isNotEmpty) displayAddress = city;
+        if (state.isNotEmpty) {
+          displayAddress += displayAddress.isNotEmpty ? ', $state' : state;
+        }
+        if (displayAddress.isEmpty) displayAddress = fullAddress;
+
+        print('Address obtained: $displayAddress');
 
         return {
-          'city': city,
-          'state': state,
-          'country': country,
-          'fullAddress': fullAddress,
+          'city': city.isNotEmpty ? city : 'Unknown City',
+          'state': state.isNotEmpty ? state : 'Unknown State',
+          'country': country.isNotEmpty ? country : 'Unknown Country',
+          'fullAddress': displayAddress.isNotEmpty ? displayAddress : 'Unknown Location',
         };
+      } else {
+        print('Geocoding API error: ${response.data['status']}');
+        return null;
       }
-
-      print('No placemarks found for coordinates');
-      return null;
-
     } catch (e) {
       print('Error getting address from coordinates: $e');
       return null;
     }
   }
 
-  /// Fetch current location and save it to device storage
-  /// This is the main method to call when you need fresh location data
-  /// Returns a map with all location data or null if failed
   Future<Map<String, dynamic>?> fetchAndSaveLocation() async {
     try {
       print('Fetching current location...');
 
-      // Get GPS position
       Position? position = await getCurrentLocation();
       if (position == null) {
         print('Failed to get GPS position');
         return null;
       }
 
-      // Convert coordinates to address
       Map<String, String>? address = await getAddressFromCoordinates(
         position.latitude,
         position.longitude,
@@ -181,7 +132,6 @@ class LocationService {
         return null;
       }
 
-      // Save all data to SharedPreferences for future use
       final prefs = await SharedPreferences.getInstance();
       await prefs.setDouble(_keyLatitude, position.latitude);
       await prefs.setDouble(_keyLongitude, position.longitude);
@@ -192,7 +142,6 @@ class LocationService {
 
       print('Location saved to storage');
 
-      // Return combined data
       return {
         'latitude': position.latitude,
         'longitude': position.longitude,
@@ -201,27 +150,22 @@ class LocationService {
         'country': address['country'],
         'fullAddress': address['fullAddress'],
       };
-
     } catch (e) {
       print('Error in fetchAndSaveLocation: $e');
       return null;
     }
   }
 
-  /// Retrieve previously saved location from device storage
-  /// This is faster than fetching new location data
-  /// Returns null if no saved location exists
   Future<Map<String, dynamic>?> getSavedLocation() async {
     try {
       final prefs = await SharedPreferences.getInstance();
 
-      // Check if location data exists
-      if (!prefs.containsKey(_keyLatitude) || !prefs.containsKey(_keyLongitude)) {
+      if (!prefs.containsKey(_keyLatitude) ||
+          !prefs.containsKey(_keyLongitude)) {
         print('No saved location found');
         return null;
       }
 
-      // Retrieve all saved data
       final latitude = prefs.getDouble(_keyLatitude);
       final longitude = prefs.getDouble(_keyLongitude);
       final city = prefs.getString(_keyCity);
@@ -229,11 +173,7 @@ class LocationService {
       final country = prefs.getString(_keyCountry);
       final fullAddress = prefs.getString(_keyFullAddress);
 
-      // Validate that we have at least coordinates
-      if (latitude == null || longitude == null) {
-        print('Saved location data is incomplete');
-        return null;
-      }
+      if (latitude == null || longitude == null) return null;
 
       print('Loaded saved location: $fullAddress');
 
@@ -245,14 +185,12 @@ class LocationService {
         'country': country ?? 'Unknown',
         'fullAddress': fullAddress ?? 'Unknown Location',
       };
-
     } catch (e) {
       print('Error getting saved location: $e');
       return null;
     }
   }
 
-  /// Clear all saved location data from device storage
   Future<void> clearSavedLocation() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -268,36 +206,32 @@ class LocationService {
     }
   }
 
-  /// Calculate straight-line distance between two GPS coordinates
-  /// Returns distance in kilometers
-  /// Uses the Haversine formula for accurate calculation
-  double calculateDistance(
-      double startLatitude,
-      double startLongitude,
-      double endLatitude,
-      double endLongitude,
-      ) {
+  double calculateDistance(double startLat, double startLng,
+      double endLat, double endLng) {
     try {
-      // Geolocator.distanceBetween returns distance in meters
-      double distanceInMeters = Geolocator.distanceBetween(
-        startLatitude,
-        startLongitude,
-        endLatitude,
-        endLongitude,
-      );
-
-      // Convert meters to kilometers
-      double distanceInKm = distanceInMeters / 1000;
-
-      return distanceInKm;
+      double meters = Geolocator.distanceBetween(
+          startLat, startLng, endLat, endLng);
+      return meters / 1000;
     } catch (e) {
-      print('Error calculating distance: $e');
       return 0.0;
     }
   }
 
-  /// Open device settings so user can manually grant location permission
-  /// Useful when permissions are permanently denied
+  String formatDistance(double distanceInKm) {
+    if (distanceInKm < 1) {
+      return '${(distanceInKm * 1000).round()} m';
+    }
+    return '${distanceInKm.toStringAsFixed(1)} km';
+  }
+
+  Future<bool> isLocationServiceEnabled() async {
+    try {
+      return await Geolocator.isLocationServiceEnabled();
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<void> openAppSettings() async {
     try {
       await Geolocator.openAppSettings();
@@ -306,36 +240,11 @@ class LocationService {
     }
   }
 
-  /// Open device location settings
-  /// Useful when location services are disabled
   Future<void> openLocationSettings() async {
     try {
       await Geolocator.openLocationSettings();
     } catch (e) {
       print('Error opening location settings: $e');
-    }
-  }
-
-  /// Get a formatted string showing distance
-  /// Examples: "2.5 km", "350 m", "0 km"
-  String formatDistance(double distanceInKm) {
-    if (distanceInKm < 1) {
-      // Show in meters if less than 1 km
-      int meters = (distanceInKm * 1000).round();
-      return '$meters m';
-    } else {
-      // Show in km with 1 decimal place
-      return '${distanceInKm.toStringAsFixed(1)} km';
-    }
-  }
-
-  /// Check if the device has location services enabled
-  Future<bool> isLocationServiceEnabled() async {
-    try {
-      return await Geolocator.isLocationServiceEnabled();
-    } catch (e) {
-      print('Error checking location service: $e');
-      return false;
     }
   }
 }
