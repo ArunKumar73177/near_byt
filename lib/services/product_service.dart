@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
 import 'api_client.dart';
 
 class ProductService {
@@ -22,11 +24,12 @@ class ProductService {
     required String location,
     required double latitude,
     required double longitude,
-    required List<String> imagePaths, // local file paths
+    required List<XFile> imageFiles,
   }) async {
     await ApiClient.addAuthHeader();
 
     final formData = FormData();
+
     formData.fields.addAll([
       MapEntry('title', title),
       MapEntry('price', price.toString()),
@@ -37,16 +40,35 @@ class ProductService {
       MapEntry('latitude', latitude.toString()),
       MapEntry('longitude', longitude.toString()),
     ]);
-    for (final path in imagePaths) {
-      formData.files.add(MapEntry(
-        'images',
-        await MultipartFile.fromFile(path),
-      ));
+
+    for (final xfile in imageFiles) {
+      if (kIsWeb) {
+        // Web: read bytes directly
+        final bytes = await xfile.readAsBytes();
+        formData.files.add(MapEntry(
+          'images',
+          MultipartFile.fromBytes(
+            bytes,
+            filename: xfile.name,
+          ),
+        ));
+      } else {
+        // Mobile: use file path
+        formData.files.add(MapEntry(
+          'images',
+          await MultipartFile.fromFile(
+            xfile.path,
+            filename: xfile.name,
+          ),
+        ));
+      }
     }
 
-    final response = await ApiClient.dio.post('/products',
-        data: formData,
-        options: Options(contentType: 'multipart/form-data'));
+    final response = await ApiClient.dio.post(
+      '/products',
+      data: formData,
+      options: Options(contentType: 'multipart/form-data'),
+    );
     return response.data;
   }
 
