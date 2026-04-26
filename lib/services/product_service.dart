@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'api_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductService {
   static Future<List<dynamic>> getProducts({
