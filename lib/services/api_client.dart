@@ -1,6 +1,7 @@
 // lib/services/api_client.dart
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'auth_service.dart';
 
 class ApiClient {
   static const String baseUrl = "http://localhost:8080/api";
@@ -19,8 +20,12 @@ class ApiClient {
       _dio!.interceptors.add(
         InterceptorsWrapper(
           onRequest: (options, handler) async {
-            final prefs = await SharedPreferences.getInstance();
-            final token = prefs.getString('jwtToken');
+            // Use in-memory token first, fall back to SharedPreferences
+            String? token = AuthService.token;
+            if (token == null) {
+              final prefs = await SharedPreferences.getInstance();
+              token = prefs.getString('jwtToken');
+            }
             print('TOKEN: $token');
             if (token != null) {
               options.headers['Authorization'] = 'Bearer $token';
@@ -45,8 +50,11 @@ class ApiClient {
   }
 
   static Future<void> addAuthHeader() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwtToken');
+    String? token = AuthService.token;
+    if (token == null) {
+      final prefs = await SharedPreferences.getInstance();
+      token = prefs.getString('jwtToken');
+    }
     if (token != null) {
       dio.options.headers['Authorization'] = 'Bearer $token';
     }
