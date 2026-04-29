@@ -2,7 +2,6 @@ near_byt
 
 A simple local marketplace app made with Flutter. Users can upload products they want to sell, and other users can discover and buy those products within a nearby radius — similar to OLX but focused on local, close-distance deals.
 
-
 Features
 
 Upload products with images, price, and description
