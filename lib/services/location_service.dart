@@ -22,26 +22,19 @@ class LocationService {
   Future<Position?> getCurrentLocation() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        throw Exception('Location services are disabled.');
-      }
+      if (!serviceEnabled) return null;
 
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          throw Exception('Location permission denied.');
-        }
+        if (permission == LocationPermission.denied) return null;
       }
-      if (permission == LocationPermission.deniedForever) {
-        throw Exception('Location permissions permanently denied.');
-      }
+      if (permission == LocationPermission.deniedForever) return null;
 
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 10),
+        desiredAccuracy: LocationAccuracy.low, // ← change to low for web
+        timeLimit: const Duration(seconds: 15), // ← increase timeout
       );
-
       print('Location obtained: ${position.latitude}, ${position.longitude}');
       return position;
     } catch (e) {
