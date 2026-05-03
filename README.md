@@ -19,6 +19,7 @@ Simple and clean UI
 Tech Used
 
 Flutter (Dart)
+Spring Boot
 Mongo DB
 
 Google Maps API / Geolocator (location services)
