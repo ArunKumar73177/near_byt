@@ -347,7 +347,6 @@ class _SellPageState extends State<SellPage> {
               ),
               const SizedBox(height: 16),
 
-              // Description Card
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
