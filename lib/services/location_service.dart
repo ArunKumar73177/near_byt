@@ -43,7 +43,6 @@ class LocationService {
     }
   }
 
-  /// Uses Google Maps Geocoding API — works on Web, Android, iOS
   Future<Map<String, String>?> getAddressFromCoordinates(
       double latitude, double longitude) async {
     try {
