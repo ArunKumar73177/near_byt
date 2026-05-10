@@ -32,8 +32,8 @@ class LocationService {
       if (permission == LocationPermission.deniedForever) return null;
 
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.low, // ← change to low for web
-        timeLimit: const Duration(seconds: 15), // ← increase timeout
+        desiredAccuracy: LocationAccuracy.low,
+        timeLimit: const Duration(seconds: 15),
       );
       print('Location obtained: ${position.latitude}, ${position.longitude}');
       return position;
