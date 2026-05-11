@@ -56,7 +56,7 @@ class LocationService {
         final results = response.data['results'] as List;
         if (results.isEmpty) return null;
 
-        // Extract address components from first result
+
         final components =
         results[0]['address_components'] as List;
 
