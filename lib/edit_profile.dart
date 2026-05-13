@@ -210,7 +210,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
           key: _formKey,
           child: Column(
             children: [
-              // Profile Picture Section
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(24),
