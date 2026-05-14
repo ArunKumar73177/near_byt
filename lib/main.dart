@@ -188,7 +188,6 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                       ),
                       const SizedBox(height: 24),
-                      // App name
                       ShaderMask(
                         shaderCallback: (bounds) => const LinearGradient(
                           colors: [
